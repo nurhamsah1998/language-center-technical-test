@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'generated/prisma';
+import { UserSession } from './types';
 
 @Injectable()
 export class AuthService {
@@ -59,7 +60,7 @@ export class AuthService {
     if (!isWrongPassword) {
       throw { message: `Invalid credential` };
     }
-    const tokenPayload = {
+    const tokenPayload: UserSession = {
       email: user?.email,
       id: user?.id,
       phone_number: user?.profile?.phoneNumber,
@@ -107,11 +108,11 @@ export class AuthService {
     if (!user) {
       throw { message: `${body.email} not found in our database` };
     }
-    const tokenPayload = {
+    const UserSession = {
       email: user?.email,
       id: user?.id,
     };
-    const forgotPasswordToken = await this.jwtService.signAsync(tokenPayload, {
+    const forgotPasswordToken = await this.jwtService.signAsync(UserSession, {
       secret: process.env.RESET_PASSWORD_TOKEN,
       expiresIn: '14d',
     });
