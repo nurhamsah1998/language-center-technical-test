@@ -8,7 +8,7 @@ import { UpdateProfileDto } from './profile.dto';
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(request: Request) {
+  async MyProfile(request: Request) {
     const userSession: UserSession = request['user'];
     const data = await this.prisma.user.findFirst({
       where: {
@@ -31,7 +31,7 @@ export class ProfileService {
     return data;
   }
 
-  async update({
+  async UpdateMyProfile({
     body,
     request,
   }: {

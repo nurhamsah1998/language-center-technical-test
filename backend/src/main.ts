@@ -17,6 +17,14 @@ async function bootstrap() {
     .setTitle('API Documentation')
     .setDescription('The API description for language center technical test')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        scheme: 'bearer',
+        type: 'http',
+        bearerFormat: 'JWT',
+      },
+      'access_token',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, documentFactory);

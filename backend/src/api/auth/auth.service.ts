@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   AuthForgotPasswordDto,
   AuthLoginDto,
+  AuthRefreshTokenDto,
   AuthRegisterDto,
   AuthResetDto,
 } from './auth.dto';
@@ -11,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'generated/prisma';
 import { UserSession } from './types';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,8 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
+  private accessTokenExpiresIn = '30s';
+  private refreshTokenExpiresIn = '15s';
 
   async Register({ body }: { body: AuthRegisterDto }) {
     return await this.prisma.user.create({
@@ -43,6 +47,7 @@ export class AuthService {
       select: {
         email: true,
         id: true,
+        role: true,
         profile: {
           select: {
             name: true,
@@ -65,14 +70,15 @@ export class AuthService {
       id: user?.id,
       phone_number: user?.profile?.phoneNumber,
       name: user?.profile?.name,
+      role: user?.role,
     };
     const accessToken = await this.jwtService.signAsync(tokenPayload, {
       secret: process.env.ACCESS_TOKEN,
-      expiresIn: '8h',
+      expiresIn: this.accessTokenExpiresIn,
     });
     const refreshToken = await this.jwtService.signAsync(tokenPayload, {
       secret: process.env.REFRESH_TOKEN,
-      expiresIn: '7d',
+      expiresIn: this.refreshTokenExpiresIn,
     });
     const data = await this.prisma.user.update({
       where: {
@@ -93,6 +99,72 @@ export class AuthService {
       },
     });
     return { ...data, accessToken, refreshToken };
+  }
+
+  async Logout(request: Request) {
+    const userSession: UserSession = request['user'];
+    await this.prisma.user.findUnique({
+      where: {
+        id: userSession.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+    return await this.prisma.user.update({
+      where: {
+        id: userSession.id,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
+  }
+
+  async RefreshToken({ body }: { body: AuthRefreshTokenDto }) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        refreshToken: body.refreshToken,
+      },
+      select: {
+        email: true,
+        id: true,
+        refreshToken: true,
+        role: true,
+        profile: {
+          select: {
+            name: true,
+            phoneNumber: true,
+          },
+        },
+      },
+    });
+    if (!user) {
+      throw {
+        message: `refresh token has ended or not found, please login again!`,
+      };
+    }
+    try {
+      await this.jwtService.verifyAsync((user as any)?.refreshToken, {
+        secret: process.env.REFRESH_TOKEN,
+      });
+    } catch {
+      throw {
+        message: `refresh token has ended, please login again!`,
+      };
+    }
+    const tokenPayload: UserSession = {
+      email: user?.email,
+      id: user?.id,
+      phone_number: user?.profile?.phoneNumber,
+      name: user?.profile?.name,
+      role: user.role,
+    };
+    const accessToken = await this.jwtService.signAsync(tokenPayload, {
+      secret: process.env.ACCESS_TOKEN,
+      expiresIn: this.accessTokenExpiresIn,
+    });
+    return accessToken;
   }
 
   async ForgotPassword({ body }: { body: AuthForgotPasswordDto }) {

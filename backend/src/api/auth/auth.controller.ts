@@ -8,15 +8,18 @@ import {
   Param,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   AuthForgotPasswordDto,
   AuthLoginDto,
+  AuthRefreshTokenDto,
   AuthRegisterDto,
   AuthResetDto,
 } from './auth.dto';
 import { User } from 'generated/prisma';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -44,6 +47,28 @@ export class AuthController {
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Invalid credential');
+    }
+  }
+
+  @Post('log-out')
+  async Logout(@Req() request: Request) {
+    try {
+      await this.service.Logout(request);
+      return { message: 'log out successfully' };
+    } catch (error: any) {
+      console.log(error);
+      throw new BadRequestException(error?.message as any);
+    }
+  }
+
+  @Post('refresh')
+  async RefreshToken(@Body() body: AuthRefreshTokenDto) {
+    try {
+      const newToken = await this.service.RefreshToken({ body });
+      return newToken;
+    } catch (error: any) {
+      console.log(error);
+      throw new BadRequestException(error?.message as any);
     }
   }
 

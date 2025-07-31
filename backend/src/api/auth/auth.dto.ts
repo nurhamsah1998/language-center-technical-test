@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsJWT,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -56,6 +57,15 @@ export class AuthForgotPasswordDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+}
+
+export class AuthRefreshTokenDto {
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im...(and more)',
+  })
+  @IsJWT()
+  @IsNotEmpty()
+  refreshToken: string;
 }
 
 export class AuthResetDto {

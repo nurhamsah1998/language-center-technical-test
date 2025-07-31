@@ -25,8 +25,12 @@ export class AuthGuardService implements CanActivate {
       });
 
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+    } catch (error) {
+      throw new UnauthorizedException(
+        error?.message?.includes('jwt expired')
+          ? 'jwt expired'
+          : 'Unauthorized',
+      );
     }
     return true;
   }
