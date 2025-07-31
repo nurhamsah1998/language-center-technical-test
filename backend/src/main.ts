@@ -12,7 +12,12 @@ async function bootstrap() {
     methods: '*',
     allowedHeaders: '*',
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
     .setDescription('The API description for language center technical test')

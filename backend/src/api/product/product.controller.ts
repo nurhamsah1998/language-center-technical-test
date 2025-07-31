@@ -31,7 +31,11 @@ export class ProductController {
       return await this.productService.Create(body);
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      if (error?.code == 'P2002') {
+        throw new BadRequestException('name already exist!');
+      } else {
+        throw new BadRequestException();
+      }
     }
   }
 

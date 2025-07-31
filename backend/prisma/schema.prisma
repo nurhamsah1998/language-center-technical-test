@@ -49,7 +49,7 @@ model Profile {
 
 model ProductCategory {
   id        String    @id @default(uuid(7)) @db.Uuid()
-  name      String
+  name      String    @unique
   Product   Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -59,7 +59,7 @@ model ProductCategory {
 
 model Product {
   id                String           @id @default(uuid(7)) @db.Uuid()
-  name              String
+  name              String           @unique
   desc              String?
   stock             Int?
   sellPrice         Int
@@ -76,7 +76,7 @@ model Product {
 
 model Order {
   id             String           @id @default(uuid(7)) @db.Uuid()
-  orderCode      String
+  orderCode      String           @unique
   buyer          User             @relation(fields: [userId], references: [id])
   ProductOnOrder ProductOnOrder[]
   userId         String           @db.Uuid()

@@ -28,9 +28,13 @@ export class ProductCategoryController {
   async Create(@Body() body: MutationProductCategoryDto) {
     try {
       return await this.productCategoryService.Create(body);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-      throw new BadRequestException();
+      if (error?.code == 'P2002') {
+        throw new BadRequestException('name already exist!');
+      } else {
+        throw new BadRequestException();
+      }
     }
   }
 

@@ -21,17 +21,18 @@ export class ProductCategoryService {
         name: query.search,
       },
     });
-    const data = await this.prisma.productCategory.count({
+    const data = await this.prisma.productCategory.findMany({
       where: {
         name: query.search,
       },
-      skip: query.page >= 0 ? query.page * query.limit : 0,
+      skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,
     });
-    const totalPage = Math.floor(totalData / query.limit);
+    const totalPage = Math.ceil(totalData / query.limit);
     return {
       data,
       meta: {
+        page: query.page,
         totalPage,
         totalData,
       },
