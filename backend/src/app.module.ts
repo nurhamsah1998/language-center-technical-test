@@ -5,9 +5,11 @@ import { AuthModule } from './api/auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProfileModule } from './api/profile/profile.module';
 import { GuardModule } from './guard/guard.module';
+import { ProductCategoryModule } from './api/product-category/product-category.module';
+import { ProductModule } from './api/product/product.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, ProfileModule, GuardModule],
+  imports: [AuthModule, PrismaModule, ProfileModule, GuardModule, ProductCategoryModule, ProductModule],
   controllers: [AppController],
   providers: [AppService],
 })
