@@ -9,6 +9,7 @@ const ResetPasswordPage = lazy(() => import("./pages/reset-password.page"));
 const NotFoundPage = lazy(() => import("./pages/not-found.page"));
 const OrderPage = lazy(() => import("./pages/order.page"));
 const ProductdPage = lazy(() => import("./pages/product.page"));
+const ProductCategoryPage = lazy(() => import("./pages/product-category.page"));
 
 function Router() {
   return useRoutes([
@@ -23,6 +24,10 @@ function Router() {
         {
           element: <ProductdPage />,
           path: "product",
+        },
+        {
+          element: <ProductCategoryPage />,
+          path: "product-category",
         },
         {
           element: <OrderPage />,

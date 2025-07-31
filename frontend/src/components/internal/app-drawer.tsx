@@ -1,10 +1,12 @@
-import { Navigate, Outlet } from "react-router-dom";
-import Sidebar from "./sidebar";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Sidebar, { navMenu } from "./sidebar";
 import { Card, CardContent } from "../ui/card";
 
 function AppDrawer() {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
+  const location = useLocation();
+  const labelHeader = navMenu?.find((item) => item.path === location.pathname);
   if (!accessToken || !refreshToken) return <Navigate replace to="/login" />;
   return (
     <div className="flex w-full h-dvh">
@@ -12,6 +14,9 @@ function AppDrawer() {
       <div className="w-full p-3">
         <Card>
           <CardContent>
+            <div className="text-xl font-bold text-slate-700 mb-3">
+              {labelHeader?.title || "-"}
+            </div>
             <Outlet />
           </CardContent>
         </Card>

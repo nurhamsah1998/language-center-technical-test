@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import ModalAlert from "./modal-alert";
 
-const navMenu = [
+export const navMenu = [
   {
     title: "Dashboard",
     path: "/",
@@ -10,6 +10,10 @@ const navMenu = [
   {
     title: "Product",
     path: "/product",
+  },
+  {
+    title: "Product category",
+    path: "/product-category",
   },
   {
     title: "Order",
