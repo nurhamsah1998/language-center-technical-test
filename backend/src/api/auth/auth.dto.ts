@@ -64,12 +64,12 @@ export class AuthResetDto {
   @MaxLength(50)
   @MinLength(8)
   @IsNotEmpty()
-  new_password: string;
+  newPassword: string;
 
   @ApiProperty({ example: 'newpassword123' })
   @IsString()
   @MaxLength(50)
   @MinLength(8)
   @IsNotEmpty()
-  retype_password: string;
+  retypePassword: string;
 }

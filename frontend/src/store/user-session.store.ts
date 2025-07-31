@@ -7,15 +7,23 @@ const initial = {
   id: null,
 };
 
-const userSession = create<{
+const useUserSession = create<{
   email: string | null;
   name: string | null;
   phoneNumber: string | null;
   id: string | null;
+  login: (props: any) => void;
+  logout: () => void;
 }>((set) => ({
   ...initial,
-  login: () => set((state) => ({ ...state })),
+  login: () =>
+    set((state) => ({
+      email: state.email,
+      name: state.name,
+      phoneNumber: state.phoneNumber,
+      id: state.id,
+    })),
   logout: () => set(() => initial),
 }));
 
-export { userSession };
+export { useUserSession };

@@ -92,7 +92,7 @@ export class AuthService {
         },
       },
     });
-    return { ...data, accessToken };
+    return { ...data, accessToken, refreshToken };
   }
 
   async ForgotPassword({ body }: { body: AuthForgotPasswordDto }) {
@@ -142,7 +142,7 @@ export class AuthService {
     const payload = await this.jwtService.verifyAsync(forgotPasswordToken, {
       secret: process.env.RESET_PASSWORD_TOKEN,
     });
-    if (body.new_password !== body.retype_password) {
+    if (body.newPassword !== body.retypePassword) {
       throw { message: 'new password and retype password not match!' };
     }
     const user = await this.prisma.user.findFirst({
@@ -173,7 +173,7 @@ export class AuthService {
         email: user?.email,
       },
       data: {
-        password: await bcrypt.hash(body.new_password, 10),
+        password: await bcrypt.hash(body.newPassword, 10),
         forgotPasswordToken: null,
       },
     });

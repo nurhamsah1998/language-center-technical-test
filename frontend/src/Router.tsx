@@ -6,15 +6,27 @@ const RegisterPage = lazy(() => import("./pages/register.page"));
 const LoginPage = lazy(() => import("./pages/login.page"));
 const ForgotPasswordPage = lazy(() => import("./pages/forgot-password.page"));
 const ResetPasswordPage = lazy(() => import("./pages/reset-password.page"));
+const NotFoundPage = lazy(() => import("./pages/not-found.page"));
+const OrderPage = lazy(() => import("./pages/order.page"));
+const ProductdPage = lazy(() => import("./pages/product.page"));
 
 function Router() {
   return useRoutes([
     {
       element: <AppDrawer />,
+      path: "/",
       children: [
         {
           element: <DashboardPage />,
           index: true,
+        },
+        {
+          element: <ProductdPage />,
+          path: "product",
+        },
+        {
+          element: <OrderPage />,
+          path: "order",
         },
       ],
     },
@@ -32,7 +44,11 @@ function Router() {
     },
     {
       element: <ResetPasswordPage />,
-      path: "/reset-password/:token",
+      path: "/reset-password/:forgotPasswordToken",
+    },
+    {
+      element: <NotFoundPage />,
+      path: "/*",
     },
   ]);
 }

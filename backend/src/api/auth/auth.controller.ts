@@ -6,8 +6,8 @@ import {
   Controller,
   InternalServerErrorException,
   Param,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -62,7 +62,7 @@ export class AuthController {
     }
   }
 
-  @Patch('reset-password/:forgotPasswordToken')
+  @Put('reset-password/:forgotPasswordToken')
   async ResetPassword(
     @Body() body: AuthResetDto,
     @Param('forgotPasswordToken') forgotPasswordToken: string,

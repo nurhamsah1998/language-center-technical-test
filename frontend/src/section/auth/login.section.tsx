@@ -3,8 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import TextErrorForm from "@/components/internal/TextErrorForm";
+import { useTransition } from "react";
+import AXIOS from "@/utils/axios";
+import { useUserSession } from "@/store/user-session.store";
+import { useNavigate } from "react-router-dom";
 
 type loginFormProps = {
   email: string;
@@ -14,6 +19,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<loginFormProps>({
     defaultValues: {
@@ -21,9 +27,29 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
       password: "",
     },
   });
-
+  const [isPending, startTransition] = useTransition();
+  const { login } = useUserSession();
+  const nav = useNavigate();
   const onSubmit = (values: loginFormProps) => {
-    console.log(values);
+    startTransition(async () => {
+      try {
+        const res = await AXIOS.post("/auth/login", values);
+        reset();
+        const { accessToken, id, refreshToken, email } = res?.data || {};
+        const { name, phoneNumber } = res?.data?.profile || {};
+        login({
+          name,
+          phoneNumber,
+          email,
+          id,
+        });
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        nav("/");
+      } catch (error) {
+        toast.error((error as any)?.response?.data?.message);
+      }
+    });
   };
   return (
     <div className="  min-h-dvh flex justify-center items-center">
@@ -75,7 +101,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
                       <div className="flex items-center">
                         <Label htmlFor="password">Password</Label>
                         <a
-                          href="#"
+                          href="/forgot-password"
                           className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                         >
                           Forgot your password?
@@ -99,7 +125,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
                 />
 
                 <div className="flex flex-col gap-3">
-                  <Button type="submit" className="w-full">
+                  <Button disabled={isPending} type="submit" className="w-full">
                     Login
                   </Button>
                 </div>

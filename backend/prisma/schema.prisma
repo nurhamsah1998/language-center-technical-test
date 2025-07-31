@@ -33,11 +33,11 @@ model User {
 }
 
 model Profile {
-  id          String @id @default(uuid(7)) @db.Uuid()
+  id          String  @id @default(uuid(7)) @db.Uuid()
   name        String
-  phoneNumber String
-  user        User?  @relation(fields: [userId], references: [id])
-  userId      String @unique @db.Uuid()
+  phoneNumber String?
+  user        User?   @relation(fields: [userId], references: [id])
+  userId      String  @unique @db.Uuid()
 
   @@map("profiles")
 }
