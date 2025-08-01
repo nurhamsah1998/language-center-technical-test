@@ -20,7 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-  private accessTokenExpiresIn = '5h';
+  private accessTokenExpiresIn = '20s';
   private refreshTokenExpiresIn = '7d';
 
   async Register({ body }: { body: AuthRegisterDto }) {
@@ -99,26 +99,6 @@ export class AuthService {
       },
     });
     return { ...data, accessToken, refreshToken };
-  }
-
-  async Logout(request: Request) {
-    const userSession: UserSession = request['user'];
-    await this.prisma.user.findUnique({
-      where: {
-        id: userSession.id,
-      },
-      select: {
-        id: true,
-      },
-    });
-    return await this.prisma.user.update({
-      where: {
-        id: userSession.id,
-      },
-      data: {
-        refreshToken: null,
-      },
-    });
   }
 
   async RefreshToken({ body }: { body: AuthRefreshTokenDto }) {

@@ -20,11 +20,11 @@ import {
 } from './product.dto';
 
 @Controller('product')
+@ApiBearerAuth('access_token')
+@UseGuards(AuthGuardService)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @ApiBearerAuth('access_token')
-  @UseGuards(AuthGuardService)
   @Post()
   async Create(@Body() body: CreateProductDto) {
     try {
@@ -39,8 +39,6 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('access_token')
-  @UseGuards(AuthGuardService)
   @Get()
   async FindAll(@Query() query: QueryProduct) {
     try {
@@ -51,8 +49,6 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('access_token')
-  @UseGuards(AuthGuardService)
   @Put(':id')
   async Update(@Param('id') id: string, @Body() body: UpdateProductDto) {
     try {
@@ -63,8 +59,6 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('access_token')
-  @UseGuards(AuthGuardService)
   @Delete(':id')
   async Remove(@Param('id') id: string) {
     try {

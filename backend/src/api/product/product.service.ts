@@ -18,13 +18,19 @@ export class ProductService {
     });
     if (!dataCategory) {
       throw {
-        message: `cannot create. product category not found`,
+        message: `mutation failed. product category not found`,
       };
     }
   }
 
   async Create(body: CreateProductDto) {
     await this.findProductCategory(body.categoryId);
+    /// validation sell price must be greater or equal than buy price
+    if (body.buyPrice >= body.sellPrice) {
+      throw {
+        message: `sell price must be greater or equal than buy price`,
+      };
+    }
     return await this.prisma.product.create({
       data: {
         name: body.name,

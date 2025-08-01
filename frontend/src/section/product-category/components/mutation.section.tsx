@@ -11,12 +11,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { ReactElement } from "react";
+import AXIOS from "@/utils/axios";
+import { useEffect, useTransition, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export type productCategoryFormProps = {
   name: string;
-  mutation?: "post" | "patch";
+  id?: string;
+  mutation?: "post" | "put";
 };
 
 function ProductCategoryMutationSection({
@@ -32,18 +35,83 @@ function ProductCategoryMutationSection({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<productCategoryFormProps>({
     defaultValues: {
       name: "",
     },
   });
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+  const [isPending, startTransition] = useTransition();
   const onSubmit = (values: productCategoryFormProps) => {
-    console.log(values);
+    startTransition(async () => {
+      try {
+        /// PADA LOGIC INI BISA POST ATAU PUT TERGANTU DARI VALUE data.mutation
+        const res = await (AXIOS as any)[
+          data.mutation as keyof Pick<productCategoryFormProps, "mutation">
+        ](
+          `/product-category${data.mutation === "put" ? `/${data.id}` : ""}`,
+          values,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        toast.success(res?.data?.message);
+        reset();
+      } catch (error: any) {
+        /// LOGIC JIKA ACCESS TOKEN EXPIRED
+        if (
+          error?.response?.data?.message === "jwt expired" &&
+          error?.status === 401
+        ) {
+          const requestNewAccessToken = await AXIOS.post(`/auth/refresh`, {
+            refreshToken,
+          }).catch((refreshError) => {
+            toast.error((refreshError as any)?.response?.data?.message);
+            localStorage.clear();
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          });
+          const newAccessToken = requestNewAccessToken?.data;
+          localStorage.setItem("accessToken", newAccessToken);
+          const res = await (AXIOS as any)[
+            data.mutation as keyof Pick<productCategoryFormProps, "mutation">
+          ](
+            /// PADA LOGIC INI BISA POST ATAU PUT TERGANTU DARI VALUE data.mutation
+            `/product-category${data.mutation === "put" ? `/${data.id}` : ""}`,
+            values,
+            {
+              headers: {
+                Authorization: `Bearer ${newAccessToken}`,
+              },
+            }
+          );
+          toast.success(res?.data?.message);
+          return;
+        } else if (error?.status === 401) {
+          localStorage.clear();
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
+        console.log(error);
+        toast.error((error as any)?.response?.data?.message);
+      }
+    });
   };
   const handleCancel = () => {
     setData({ ...data, mutation: "post" });
   };
+  useEffect(() => {
+    if (data?.mutation === "put") {
+      setValue("name", data?.name);
+    }
+  }, [data]);
   return (
     <AlertDialog>
       {children}
@@ -89,7 +157,10 @@ function ProductCategoryMutationSection({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSubmit(onSubmit)}>
+          <AlertDialogAction
+            disabled={isPending}
+            onClick={handleSubmit(onSubmit)}
+          >
             Save
           </AlertDialogAction>
         </AlertDialogFooter>

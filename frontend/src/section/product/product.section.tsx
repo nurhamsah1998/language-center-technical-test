@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import ProductMutationSection, {
   type productFormProps,
-} from "./mutation.section";
+} from "./components/mutation.section";
 import { AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 

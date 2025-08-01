@@ -12,15 +12,17 @@ function SelectOption({
   options = [],
   onChange = () => {},
   value,
+  disabled = false,
   placeholder = "text",
 }: {
   options: optionProps[];
   onChange: () => void;
   value: string | undefined;
   placeholder: string;
+  disabled?: boolean;
 }) {
   return (
-    <Select onValueChange={onChange} value={value}>
+    <Select disabled={disabled} onValueChange={onChange} value={value}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

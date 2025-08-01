@@ -1,39 +1,53 @@
 import AXIOS from "@/utils/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 type Props = {
   api: string;
   invalidateKey: string;
-  enabled?: boolean;
-  query?: Record<string, string | number>;
+  mutation: "delete" | "post" | "put";
 };
-const objCleaner = (obj: Record<string, string | number>): {} => {
-  try {
-    for (const key in obj) {
-      if (!key) {
-        delete obj[key];
-      }
-    }
-    return obj;
-  } catch (error) {
-    return {};
-  }
-};
-function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
+
+function useMutationX({ api, invalidateKey, mutation }: Props) {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
-  const queryParams = new URLSearchParams(objCleaner(query));
-  const queryFetch = useQuery({
-    queryKey: [invalidateKey, queryParams.toString()],
-    queryFn: async () => {
-      try {
-        const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
+  const client = useQueryClient();
+  /// LOGIC UNTUK BISA MELAKUKAN MULTI MUTATION (delete, post, put)
+  const AxiosMutation = async ({
+    accessToken,
+    values,
+  }: {
+    values: any;
+    accessToken: string | null;
+  }) => {
+    const paramId = values?.id;
+    delete values.id;
+    if (mutation === "post" || mutation === "put") {
+      return await AXIOS[mutation](
+        `${api}${mutation === "put" ? `${paramId}` : ""}`,
+        values,
+        {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        });
-        return res;
+        }
+      );
+    } else {
+      return await AXIOS.delete(`${api}/${paramId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+  };
+  const queryMutation = useMutation({
+    queryKey: [invalidateKey],
+    queryFn: async (values: any) => {
+      try {
+        const res = await AxiosMutation({ values, accessToken });
+        toast.success(res?.data?.message);
+        /// INVALIDATE QUERY
+        client.invalidateQueries({ queryKey: [invalidateKey] });
       } catch (error: any) {
         /// LOGIC JIKA ACCESS TOKEN EXPIRED
         if (
@@ -55,12 +69,14 @@ function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
           const newAccessToken = requestNewAccessToken?.data;
           localStorage.setItem("accessToken", newAccessToken);
           /// MELAKUKAN MUTATION ULANG SETELAH MENDAPATKAN ACCESS TOKEN BARU
-          const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
-            headers: {
-              Authorization: `Bearer ${newAccessToken}`,
-            },
+          const res = await AxiosMutation({
+            values,
+            accessToken: newAccessToken,
           });
-          return res;
+          toast.success(res?.data?.message);
+          /// INVALIDATE QUERY
+          client.invalidateQueries({ queryKey: [invalidateKey] });
+          return;
         } else if (error?.status === 401) {
           localStorage.clear();
           setTimeout(() => {
@@ -70,18 +86,8 @@ function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
         console.log(error);
       }
     },
-    enabled,
   });
-  const items = queryFetch?.data?.data?.data;
-  const { totalPage, totalData } = queryFetch?.data?.data?.meta || {};
-  return {
-    totalPage,
-    totalData,
-    items,
-    accessToken,
-    refreshToken,
-    ...queryFetch,
-  };
+  return { ...queryMutation };
 }
 
-export default useFetch;
+export default useMutationX;

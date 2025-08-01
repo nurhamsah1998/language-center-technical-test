@@ -13,9 +13,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { type ReactElement } from "react";
+import { useMemo, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
-import ProductCategoryMutationSection from "../product-category/mutation.section";
+import ProductCategoryMutationSection, {
+  type productCategoryFormProps,
+} from "../../product-category/components/mutation.section";
+import useFetch from "@/hooks/useFetch";
 
 export type productFormProps = {
   name: string;
@@ -47,6 +50,20 @@ function ProductMutationSection({
       buyPrice: null,
     },
   });
+  const { items, isLoading } = useFetch({
+    api: "/product-category",
+    invalidateKey: "/product-category",
+  });
+
+  const productCategoryOption = useMemo(
+    () =>
+      items?.map((item: Pick<productCategoryFormProps, "name" | "id">) => ({
+        value: item?.id,
+        label: item?.name,
+      })) || [],
+    [items]
+  );
+
   const onSubmit = (values: productFormProps) => {
     console.log(values);
   };
@@ -102,10 +119,11 @@ function ProductMutationSection({
                     <div>
                       <div className="flex gap-3">
                         <SelectOption
+                          disabled={isLoading}
                           placeholder="category"
                           onChange={onChange}
                           value={value}
-                          options={[]}
+                          options={productCategoryOption}
                         />
                         <ProductCategoryMutationSection>
                           <AlertDialogTrigger>Add new</AlertDialogTrigger>

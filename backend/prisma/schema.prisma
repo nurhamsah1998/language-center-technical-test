@@ -20,6 +20,12 @@ enum Role {
   Analyst
 }
 
+enum StatusOrder {
+  Packaging
+  Deliver
+  Done
+}
+
 model User {
   id                  String   @id @default(uuid(7)) @db.Uuid()
   email               String   @unique
@@ -61,39 +67,45 @@ model Product {
   id                String           @id @default(uuid(7)) @db.Uuid()
   name              String           @unique
   desc              String?
+  imagePath         String?
   stock             Int?
   sellPrice         Int
   buyPrice          Int
   selled            Int?
-  category          ProductCategory? @relation(fields: [productCategoryId], references: [id])
+  productCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
   ProductOnOrder    ProductOnOrder[]
   productCategoryId String?          @db.Uuid()
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
+  @@index([productCategoryId, name])
   @@map("products")
 }
 
 model Order {
   id             String           @id @default(uuid(7)) @db.Uuid()
   orderCode      String           @unique
-  buyer          User             @relation(fields: [userId], references: [id])
+  customer       User             @relation(fields: [customerId], references: [id])
   ProductOnOrder ProductOnOrder[]
-  userId         String           @db.Uuid()
+  status         StatusOrder      @default(Packaging)
+  tracking       Json             @default("[]")
+  customerId     String           @db.Uuid()
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
+  @@index([customerId, orderCode])
   @@map("orders")
 }
 
 model ProductOnOrder {
   order     Order    @relation(fields: [orderId], references: [id])
-  orderId   String   @unique @db.Uuid()
+  orderId   String   @db.Uuid()
   product   Product  @relation(fields: [productId], references: [id])
-  productId String   @unique @db.Uuid()
+  productId String   @db.Uuid()
   qty       Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([orderId, productId])
   @@map("products-orders")
 }

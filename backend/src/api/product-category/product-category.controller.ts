@@ -18,12 +18,12 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('product-category')
 @UseGuards(AuthGuardService)
+@ApiBearerAuth('access_token')
 export class ProductCategoryController {
   constructor(
     private readonly productCategoryService: ProductCategoryService,
   ) {}
 
-  @ApiBearerAuth('access_token')
   @Post()
   async Create(@Body() body: MutationProductCategoryDto) {
     try {
@@ -38,7 +38,6 @@ export class ProductCategoryController {
     }
   }
 
-  @ApiBearerAuth('access_token')
   @Get()
   async FindAll(@Query() query: QueryInit) {
     try {
@@ -49,7 +48,6 @@ export class ProductCategoryController {
     }
   }
 
-  @ApiBearerAuth('access_token')
   @Put(':id')
   async Update(
     @Param('id') id: string,
@@ -63,7 +61,6 @@ export class ProductCategoryController {
     }
   }
 
-  @ApiBearerAuth('access_token')
   @Delete(':id')
   async Remove(@Param('id') id: string) {
     try {
