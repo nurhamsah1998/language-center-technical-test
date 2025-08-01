@@ -20,11 +20,31 @@ import {
 } from './product.dto';
 
 @Controller('product')
-@ApiBearerAuth('access_token')
-@UseGuards(AuthGuardService)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Get('public/:id')
+  async PublicFindOne(@Param('id') id: string) {
+    try {
+      return await this.productService.FindOne({ id, isPublic: true });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error?.message || 'Bad Request');
+    }
+  }
+
+  @Get('public')
+  async PublicFindAll(@Query() query: QueryProduct) {
+    try {
+      return await this.productService.FindAll({ query, isPublic: true });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error?.message || 'Bad Request');
+    }
+  }
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuardService)
   @Post()
   async Create(@Body() body: CreateProductDto) {
     try {
@@ -40,16 +60,20 @@ export class ProductController {
     }
   }
 
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuardService)
   @Get()
   async FindAll(@Query() query: QueryProduct) {
     try {
-      return await this.productService.FindAll(query);
+      return await this.productService.FindAll({ query, isPublic: false });
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error?.message || 'Bad Request');
     }
   }
 
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuardService)
   @Put(':id')
   async Update(@Param('id') id: string, @Body() body: UpdateProductDto) {
     try {
@@ -65,6 +89,8 @@ export class ProductController {
     }
   }
 
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuardService)
   @Delete(':id')
   async Remove(@Param('id') id: string) {
     try {
@@ -76,10 +102,12 @@ export class ProductController {
     }
   }
 
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuardService)
   @Get(':id')
   async FindOne(@Param('id') id: string) {
     try {
-      return await this.productService.FindOne(id);
+      return await this.productService.FindOne({ id, isPublic: false });
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error?.message || 'Bad Request');

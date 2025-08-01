@@ -8,7 +8,7 @@ import debounce from "debounce";
 import { useState } from "react";
 import TableProductSection from "./components/table.section";
 
-type queryProps = {
+export type productQueryProps = {
   page: number;
   limit: number;
   search: string;
@@ -41,7 +41,7 @@ function ProductSection() {
     stock: null,
     buyPrice: null,
   });
-  const [query, setQuery] = useState<queryProps>({
+  const [query, setQuery] = useState<productQueryProps>({
     page: 1,
     search: "",
     limit: 10,

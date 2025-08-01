@@ -16,13 +16,13 @@ const useUserSession = create<{
   logout: () => void;
 }>((set) => ({
   ...initial,
-  login: () =>
-    set((state) => ({
+  login: (state) =>
+    set({
       email: state.email,
       name: state.name,
       phoneNumber: state.phoneNumber,
       id: state.id,
-    })),
+    }),
   logout: () => set(() => initial),
 }));
 

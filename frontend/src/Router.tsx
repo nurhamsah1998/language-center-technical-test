@@ -1,6 +1,9 @@
 import { useRoutes } from "react-router-dom";
-import AppDrawer from "./components/internal/app-drawer";
+import AdminAppDrawer from "./components/internal/admin-app-drawer";
 import { lazy } from "react";
+import CustomerAppDrawer from "./components/internal/customer-app-drawer";
+const DetailProductPage = lazy(() => import("./pages/detail-product.page"));
+const MainEcommercePage = lazy(() => import("./pages/main-ecommerce.page"));
 const DashboardPage = lazy(() => import("./pages/dashboard.page"));
 const RegisterPage = lazy(() => import("./pages/register.page"));
 const LoginPage = lazy(() => import("./pages/login.page"));
@@ -14,8 +17,8 @@ const ProductCategoryPage = lazy(() => import("./pages/product-category.page"));
 function Router() {
   return useRoutes([
     {
-      element: <AppDrawer />,
-      path: "/",
+      element: <AdminAppDrawer />,
+      path: "/admin",
       children: [
         {
           element: <DashboardPage />,
@@ -23,15 +26,29 @@ function Router() {
         },
         {
           element: <ProductdPage />,
-          path: "product",
+          path: "admin/product",
         },
         {
           element: <ProductCategoryPage />,
-          path: "product-category",
+          path: "admin/product-category",
         },
         {
           element: <OrderPage />,
-          path: "order",
+          path: "admin/order",
+        },
+      ],
+    },
+    {
+      element: <CustomerAppDrawer />,
+      path: "/",
+      children: [
+        {
+          element: <MainEcommercePage />,
+          index: true,
+        },
+        {
+          element: <DetailProductPage />,
+          path: "product/:id",
         },
       ],
     },

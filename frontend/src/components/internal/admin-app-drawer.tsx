@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Sidebar, { navMenu } from "./sidebar";
 import { Card, CardContent } from "../ui/card";
 
-function AppDrawer() {
+function AdminAppDrawer() {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
   const location = useLocation();
@@ -25,4 +25,4 @@ function AppDrawer() {
   );
 }
 
-export default AppDrawer;
+export default AdminAppDrawer;

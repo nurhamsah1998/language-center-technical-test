@@ -55,6 +55,14 @@ export class OrderService {
       where: {
         id,
       },
+      include: {
+        ProductOnOrder: {
+          select: {
+            productId: true,
+            qty: true,
+          },
+        },
+      },
     });
     if (!dataOrder) {
       throw {
@@ -68,14 +76,39 @@ export class OrderService {
   }
 
   async UpdateStatus({ id, body }: { id: string; body: UpdateStatusOrderDto }) {
-    await this.findOrderById(id);
-    return await this.prisma.order.update({
-      where: {
-        id,
-      },
-      data: {
-        status: body.status,
-      },
+    const dataOrder = await this.findOrderById(id);
+    if (dataOrder.status == 'Done') {
+      throw {
+        message: `Cannot change status after status is Done!`,
+      };
+    }
+    await this.prisma.$transaction(async (ctx) => {
+      /// LOGIC PENAMBAHAN TOTAL PENJUALAN DI SETIAP ORDER PRODUCT JIKA STATUS SELESAI / Done
+      if (body.status === 'Done') {
+        for (let index = 0; index < dataOrder.ProductOnOrder.length; index++) {
+          const element = dataOrder.ProductOnOrder[index];
+          await ctx.product.update({
+            where: {
+              id: element.productId,
+            },
+            data: {
+              selled: {
+                increment: element.qty,
+              },
+            },
+          });
+        }
+      }
+
+      await ctx.order.update({
+        where: {
+          id,
+        },
+        data: {
+          status: body.status,
+        },
+      });
     });
+    return;
   }
 }

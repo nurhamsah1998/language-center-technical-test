@@ -5,19 +5,19 @@ import ModalAlert from "./modal-alert";
 export const navMenu = [
   {
     title: "Dashboard",
-    path: "/",
+    path: "/admin",
   },
   {
     title: "Product",
-    path: "/product",
+    path: "/admin/product",
   },
   {
     title: "Product category",
-    path: "/product-category",
+    path: "/admin/product-category",
   },
   {
     title: "Order",
-    path: "/order",
+    path: "/admin/order",
   },
 ];
 function Sidebar() {

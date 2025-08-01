@@ -44,7 +44,13 @@ export class ProductService {
     });
   }
 
-  async FindAll(query: QueryProduct) {
+  async FindAll({
+    query,
+    isPublic,
+  }: {
+    isPublic: boolean;
+    query: QueryProduct;
+  }) {
     const totalData = await this.prisma.product.count({
       where: {
         name: {
@@ -65,13 +71,23 @@ export class ProductService {
       orderBy: {
         createdAt: 'desc',
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
         productCategory: {
           select: {
             name: true,
             id: true,
           },
         },
+        selled: true,
+        sellPrice: true,
+        ...(!isPublic && {
+          buyPrice: true,
+        }),
+        desc: true,
+        createdAt: true,
+        stock: true,
       },
     });
     const totalPage = Math.ceil(totalData / query.limit);
@@ -85,18 +101,28 @@ export class ProductService {
     };
   }
 
-  async FindOne(id: string) {
+  async FindOne({ id, isPublic }: { id: string; isPublic: boolean }) {
     const data = await this.prisma.product.findFirst({
       where: {
         id,
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
         productCategory: {
           select: {
             name: true,
             id: true,
           },
         },
+        selled: true,
+        sellPrice: true,
+        ...(!isPublic && {
+          buyPrice: true,
+        }),
+        desc: true,
+        createdAt: true,
+        stock: true,
       },
     });
     if (!data) {

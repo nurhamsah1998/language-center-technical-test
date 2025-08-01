@@ -1,5 +1,6 @@
 import AXIOS from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
   invalidateKey: string;
   enabled?: boolean;
   staleTime?: number;
+  onSuccess?: (arg: AxiosResponse<any, any>) => void;
   query?: Record<string, string | number>;
 };
 const objCleaner = (obj: Record<string, string | number>): {} => {
@@ -23,6 +25,7 @@ const objCleaner = (obj: Record<string, string | number>): {} => {
 };
 function useFetch({
   api,
+  onSuccess = () => {},
   invalidateKey,
   staleTime = 0,
   query = {},
@@ -39,6 +42,7 @@ function useFetch({
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
+        onSuccess(res);
         return res;
       } catch (error: any) {
         /// LOGIC JIKA ACCESS TOKEN EXPIRED
@@ -66,6 +70,7 @@ function useFetch({
               Authorization: `Bearer ${newAccessToken}`,
             },
           });
+          onSuccess(res);
           return res;
         } else if (error?.status === 401) {
           localStorage.clear();
@@ -77,6 +82,7 @@ function useFetch({
       }
     },
     enabled,
+    retry: 3,
     staleTime,
   });
   const items = queryFetch?.data?.data?.data;

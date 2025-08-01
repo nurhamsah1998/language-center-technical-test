@@ -35,7 +35,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
       try {
         const res = await AXIOS.post("/auth/login", values);
         reset();
-        const { accessToken, id, refreshToken, email } = res?.data || {};
+        const { accessToken, id, refreshToken, email, role } = res?.data || {};
         const { name, phoneNumber } = res?.data?.profile || {};
         login({
           name,
@@ -45,7 +45,11 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
         });
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        nav("/");
+        if (role === "Admin") {
+          nav("/admin");
+        } else {
+          nav("/");
+        }
       } catch (error) {
         toast.error((error as any)?.response?.data?.message);
       }

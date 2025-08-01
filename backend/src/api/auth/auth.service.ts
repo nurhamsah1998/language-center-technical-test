@@ -12,7 +12,6 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'generated/prisma';
 import { UserSession } from './types';
-import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -90,6 +89,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        role: true,
         profile: {
           select: {
             name: true,
