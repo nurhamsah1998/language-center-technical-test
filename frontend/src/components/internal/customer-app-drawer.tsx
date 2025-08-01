@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import TopNavbar from "./top-navbar";
 import useFetch from "@/hooks/useFetch";
 import { useUserSession } from "@/store/user-session.store";
+import { Card, CardContent } from "../ui/card";
 
 function CustomerAppDrawer() {
   const { login } = useUserSession();
@@ -17,14 +18,17 @@ function CustomerAppDrawer() {
         phoneNumber: profileData?.profile.phoneNumber,
         id: profileData.id,
       });
-      console.log(profileData);
     },
   });
   return (
     <div>
       <TopNavbar />
       <div className="p-3">
-        <Outlet />
+        <Card>
+          <CardContent>
+            <Outlet />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

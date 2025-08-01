@@ -2,6 +2,8 @@ import { useRoutes } from "react-router-dom";
 import AdminAppDrawer from "./components/internal/admin-app-drawer";
 import { lazy } from "react";
 import CustomerAppDrawer from "./components/internal/customer-app-drawer";
+const ProfilePage = lazy(() => import("./pages/profile.page"));
+const ChangePasswordPage = lazy(() => import("./pages/change-password.page"));
 const DetailProductPage = lazy(() => import("./pages/detail-product.page"));
 const MainEcommercePage = lazy(() => import("./pages/main-ecommerce.page"));
 const DashboardPage = lazy(() => import("./pages/dashboard.page"));
@@ -49,6 +51,18 @@ function Router() {
         {
           element: <DetailProductPage />,
           path: "product/:id",
+        },
+        {
+          element: <OrderPage />,
+          path: "my-order",
+        },
+        {
+          element: <ProfilePage />,
+          path: "profile",
+        },
+        {
+          element: <ChangePasswordPage />,
+          path: "change-my-password",
         },
       ],
     },

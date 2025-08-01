@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import TextErrorForm from "@/components/internal/TextErrorForm";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import AXIOS from "@/utils/axios";
 import { useNavigate } from "react-router-dom";
 
-type RegisterFormProps = {
+type registerFormProps = {
   name: string;
   phoneNumber?: string | undefined;
   email: string;
@@ -25,7 +25,7 @@ const RegisterSection = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<RegisterFormProps>({
+  } = useForm<registerFormProps>({
     defaultValues: {
       name: "",
       phoneNumber: "",
@@ -33,9 +33,10 @@ const RegisterSection = ({
       password: "",
     },
   });
+  const [show, setShow] = useState(false);
   const [isPending, startTransition] = useTransition();
   const nav = useNavigate();
-  const onSubmit = async (values: RegisterFormProps) => {
+  const onSubmit = async (values: registerFormProps) => {
     startTransition(async () => {
       try {
         if (!values.phoneNumber) delete values.phoneNumber;
@@ -139,12 +140,18 @@ const RegisterSection = ({
                   render={({ field: { onChange, value } }) => (
                     <div className="grid gap-3">
                       <Label htmlFor="password">Password</Label>
-                      <div>
+                      <div className=" relative">
+                        <div
+                          onClick={() => setShow(!show)}
+                          className=" bg-slate-300 cursor-pointer top-1.5 px-1 rounded-md absolute right-2"
+                        >
+                          {show ? "hide" : "show"}
+                        </div>
                         <Input
                           onChange={onChange}
                           value={value}
                           id="password"
-                          type="password"
+                          type={show ? "text" : "password"}
                         />
                         {errors?.password && (
                           <TextErrorForm>

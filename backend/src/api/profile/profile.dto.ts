@@ -4,6 +4,8 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class UpdateProfileDto {
@@ -17,4 +19,27 @@ export class UpdateProfileDto {
   @IsPhoneNumber('ID')
   @IsOptional()
   phoneNumber: string;
+}
+
+export class ChangeMyPasswordDto {
+  @ApiProperty({ example: '12345678' })
+  @IsString()
+  @MaxLength(50)
+  @MinLength(8)
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @ApiProperty({ example: '123qweasdzxc' })
+  @IsString()
+  @MaxLength(50)
+  @MinLength(8)
+  @IsNotEmpty()
+  newPassword: string;
+
+  @ApiProperty({ example: '123qweasdzxc' })
+  @IsString()
+  @MaxLength(50)
+  @MinLength(8)
+  @IsNotEmpty()
+  retypePassword: string;
 }

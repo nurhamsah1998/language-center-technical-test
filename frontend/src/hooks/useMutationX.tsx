@@ -6,6 +6,7 @@ import { toast } from "sonner";
 type Props = {
   api: string;
   invalidateKey: string;
+  disableParam?: boolean;
   mutation: "delete" | "post" | "put";
   onSuccess?: (arg: AxiosResponse<any, any>) => void;
   onError?: (arg: AxiosError) => void;
@@ -14,6 +15,7 @@ type Props = {
 function useMutationX({
   api,
   invalidateKey,
+  disableParam = false,
   mutation,
   onSuccess = () => {},
   onError = () => {},
@@ -31,7 +33,7 @@ function useMutationX({
   }) => {
     if (mutation === "post" || mutation === "put") {
       return await AXIOS[mutation](
-        `${api}${mutation === "put" ? `/${values?.id}` : ""}`,
+        `${api}${mutation === "put" && !disableParam ? `/${values?.id}` : ""}`,
         values,
         {
           headers: {

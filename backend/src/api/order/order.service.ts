@@ -1,16 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto, QueryOrder, UpdateStatusOrderDto } from './order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Request } from 'express';
+import { UserSession } from '../auth/types';
 
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async Create(body: CreateOrderDto) {
+  async Create({ request, body }: { body: CreateOrderDto; request: Request }) {
+    const userSession: UserSession = request['user'];
+    /// VALIDASI JIKA ADMIN MELAKUKAN ORDER
+    if (userSession.role === 'Admin') {
+      throw {
+        message: `admin cannot make order!`,
+      };
+    }
     const totalCountOrder = await this.prisma.order.count();
     return await this.prisma.order.create({
       data: {
-        customerId: body.customerId,
+        customerId: userSession.id as keyof UserSession,
         status: 'Packaging',
         orderCode: `ORDER-${totalCountOrder + 1}-${Math.floor(Math.random() * 2000)}`,
         tracking: ['still in the shop'],

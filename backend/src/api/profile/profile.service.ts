@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
+import * as bcrypt from 'bcrypt';
 import { UserSession } from '../auth/types';
-import { UpdateProfileDto } from './profile.dto';
+import { ChangeMyPasswordDto, UpdateProfileDto } from './profile.dto';
 
 @Injectable()
 export class ProfileService {
@@ -67,5 +68,45 @@ export class ProfileService {
       throw { message: `user not found` };
     }
     return data;
+  }
+
+  async ChangeMyPassword({
+    body,
+    request,
+  }: {
+    body: ChangeMyPasswordDto;
+    request: Request;
+  }) {
+    const userSession: UserSession = request['user'];
+    const data = await this.prisma.user.findFirst({
+      where: {
+        id: userSession.id,
+      },
+      select: {
+        password: true,
+      },
+    });
+    if (!data) {
+      throw { message: `user not found` };
+    }
+    const isWrongPassword = await bcrypt.compare(
+      body.currentPassword,
+      data.password,
+    );
+
+    if (!isWrongPassword) {
+      throw { message: `Invalid current password` };
+    }
+    if (body.newPassword !== body.retypePassword) {
+      throw { message: 'new password and retype password not match!' };
+    }
+    await this.prisma.user.update({
+      where: {
+        id: userSession.id,
+      },
+      data: {
+        password: await bcrypt.hash(body.newPassword, 10),
+      },
+    });
   }
 }

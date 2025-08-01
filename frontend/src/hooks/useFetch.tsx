@@ -85,7 +85,7 @@ function useFetch({
     retry: 3,
     staleTime,
   });
-  const items = queryFetch?.data?.data?.data;
+  const items = queryFetch?.data?.data?.data || [];
   const { totalPage, totalData } = queryFetch?.data?.data?.meta || {};
   return {
     totalPage,

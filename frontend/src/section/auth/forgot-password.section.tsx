@@ -15,7 +15,7 @@ import TextErrorForm from "@/components/internal/TextErrorForm";
 import { useTransition } from "react";
 import AXIOS from "@/utils/axios";
 
-type loginFormProps = {
+type forgotPasswordFormProps = {
   email: string;
 };
 const ForgotPasswordSection = ({
@@ -27,13 +27,13 @@ const ForgotPasswordSection = ({
     reset,
     handleSubmit,
     formState: { errors },
-  } = useForm<loginFormProps>({
+  } = useForm<forgotPasswordFormProps>({
     defaultValues: {
       email: "",
     },
   });
   const [isPending, startTransition] = useTransition();
-  const onSubmit = (values: loginFormProps) => {
+  const onSubmit = (values: forgotPasswordFormProps) => {
     startTransition(async () => {
       try {
         const res = await AXIOS.post("/auth/forgot-password", values);

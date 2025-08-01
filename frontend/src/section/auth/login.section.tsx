@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import TextErrorForm from "@/components/internal/TextErrorForm";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import AXIOS from "@/utils/axios";
 import { useUserSession } from "@/store/user-session.store";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +29,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
   });
   const [isPending, startTransition] = useTransition();
   const { login } = useUserSession();
+  const [show, setShow] = useState(false);
   const nav = useNavigate();
   const onSubmit = (values: loginFormProps) => {
     startTransition(async () => {
@@ -111,12 +112,18 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
                           Forgot your password?
                         </a>
                       </div>
-                      <div>
+                      <div className=" relative">
+                        <div
+                          onClick={() => setShow(!show)}
+                          className=" bg-slate-300 cursor-pointer top-1.5 px-1 rounded-md absolute right-2"
+                        >
+                          {show ? "hide" : "show"}
+                        </div>
                         <Input
                           onChange={onChange}
                           value={value}
                           id="password"
-                          type="password"
+                          type={show ? "text" : "password"}
                         />
                         {errors?.password && (
                           <TextErrorForm>

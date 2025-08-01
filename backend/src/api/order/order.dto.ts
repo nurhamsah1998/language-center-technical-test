@@ -34,11 +34,6 @@ export class CreateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => ProductOnOrder)
   products: ProductOnOrder[];
-
-  @ApiProperty({ example: 'user id here' })
-  @IsString()
-  @IsNotEmpty()
-  customerId: string;
 }
 
 export class UpdateStatusOrderDto {

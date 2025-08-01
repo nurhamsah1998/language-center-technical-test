@@ -12,11 +12,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import TextErrorForm from "@/components/internal/TextErrorForm";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import AXIOS from "@/utils/axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-type ResetPasswordFormProps = {
+type resetPasswordFormProps = {
   newPassword: string;
   retypePassword: string;
 };
@@ -28,16 +28,17 @@ const ResetPasswordSection = ({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<ResetPasswordFormProps>({
+  } = useForm<resetPasswordFormProps>({
     defaultValues: {
       newPassword: "",
       retypePassword: "",
     },
   });
+  const [show, setShow] = useState(false);
   const { forgotPasswordToken } = useParams();
   const nav = useNavigate();
   const [isPending, startTransition] = useTransition();
-  const onSubmit = (values: ResetPasswordFormProps) => {
+  const onSubmit = (values: resetPasswordFormProps) => {
     startTransition(async () => {
       try {
         const res = await AXIOS.put(
@@ -74,12 +75,18 @@ const ResetPasswordSection = ({
                   render={({ field: { onChange, value } }) => (
                     <div className="grid gap-3">
                       <Label htmlFor="newPassword">New password</Label>
-                      <div>
+                      <div className=" relative">
+                        <div
+                          onClick={() => setShow(!show)}
+                          className=" bg-slate-300 cursor-pointer top-1.5 px-1 rounded-md absolute right-2"
+                        >
+                          {show ? "hide" : "show"}
+                        </div>
                         <Input
                           onChange={onChange}
                           value={value}
                           id="newPassword"
-                          type="text"
+                          type={show ? "text" : "password"}
                         />
                         {errors?.newPassword && (
                           <TextErrorForm>
@@ -101,12 +108,18 @@ const ResetPasswordSection = ({
                       <Label htmlFor="retypePassword">
                         Retype your password
                       </Label>
-                      <div>
+                      <div className=" relative">
+                        <div
+                          onClick={() => setShow(!show)}
+                          className=" bg-slate-300 cursor-pointer top-1.5 px-1 rounded-md absolute right-2"
+                        >
+                          {show ? "hide" : "show"}
+                        </div>
                         <Input
                           onChange={onChange}
                           value={value}
                           id="retypePassword"
-                          type="text"
+                          type={show ? "text" : "password"}
                         />
                         {errors?.retypePassword && (
                           <TextErrorForm>
