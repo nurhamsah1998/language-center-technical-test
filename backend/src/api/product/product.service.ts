@@ -10,10 +10,10 @@ import {
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async findProductCategory(categoryId: string) {
+  async findProductCategory(productCategoryId: string) {
     const dataCategory = await this.prisma.productCategory.findFirst({
       where: {
-        id: categoryId,
+        id: productCategoryId,
       },
     });
     if (!dataCategory) {
@@ -24,7 +24,7 @@ export class ProductService {
   }
 
   async Create(body: CreateProductDto) {
-    await this.findProductCategory(body.categoryId);
+    await this.findProductCategory(body.productCategoryId);
     /// validation sell price must be greater or equal than buy price
     if (body.buyPrice >= body.sellPrice) {
       throw {
@@ -37,7 +37,9 @@ export class ProductService {
         sellPrice: body.sellPrice,
         stock: body.stock,
         buyPrice: body.buyPrice,
+        selled: 0,
         desc: body.desc,
+        productCategoryId: body.productCategoryId,
       },
     });
   }
@@ -45,15 +47,32 @@ export class ProductService {
   async FindAll(query: QueryProduct) {
     const totalData = await this.prisma.product.count({
       where: {
-        name: query.search,
+        name: {
+          contains: query.search,
+          mode: 'insensitive',
+        },
       },
     });
     const data = await this.prisma.product.findMany({
       where: {
-        name: query.search,
+        name: {
+          contains: query.search,
+          mode: 'insensitive',
+        },
       },
       skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        productCategory: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
     });
     const totalPage = Math.ceil(totalData / query.limit);
     return {
@@ -71,6 +90,14 @@ export class ProductService {
       where: {
         id,
       },
+      include: {
+        productCategory: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
     });
     if (!data) {
       throw {
@@ -81,10 +108,10 @@ export class ProductService {
   }
 
   async Update({ id, body }: { id: string; body: UpdateProductDto }) {
-    await this.findProductCategory(body.categoryId);
+    await this.findProductCategory(body.productCategoryId);
     const dataCategory = await this.prisma.productCategory.findFirst({
       where: {
-        id: body.categoryId,
+        id: body.productCategoryId,
       },
     });
     if (!dataCategory) {
@@ -100,6 +127,7 @@ export class ProductService {
         name: body.name,
         sellPrice: body.sellPrice,
         buyPrice: body.buyPrice,
+        productCategoryId: body.productCategoryId,
         desc: body.desc,
       },
     });

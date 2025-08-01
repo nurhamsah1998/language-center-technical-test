@@ -30,7 +30,7 @@ export class CreateProductDto {
   @ApiProperty({ example: 'some uuid' })
   @IsNotEmpty()
   @IsString()
-  categoryId: string;
+  productCategoryId: string;
 
   @ApiProperty({
     example: '1000',
@@ -73,7 +73,7 @@ export class UpdateProductDto {
   @ApiProperty({ example: 'some uuid' })
   @IsNotEmpty()
   @IsString()
-  categoryId: string;
+  productCategoryId: string;
 
   @ApiProperty({
     example: '1000',

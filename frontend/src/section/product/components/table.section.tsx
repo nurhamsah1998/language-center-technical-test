@@ -7,33 +7,40 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import ReactPaginate from "react-paginate";
-import type { productCategoryFormProps } from "./mutation.section";
 import ModalAlert from "@/components/internal/modal-alert";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { memo, useState } from "react";
-import ProductCategoryMutationSection from "./mutation.section";
 import useMutationX from "@/hooks/useMutationX";
+import type { productProps } from "../product.section";
+import type { productFormProps } from "./mutation.section";
+import ProductMutationSection from "./mutation.section";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
-  data: Omit<productCategoryFormProps, "mutation">[];
+  data: productProps[];
   totalPage: number;
   page: number;
   isLoading: boolean;
   handlePageClick: (arg: { selected: number }) => void;
 };
-function TableProductCategorySection({
+function TableProductSection({
   data,
   totalPage,
   page,
   isLoading,
   handlePageClick = () => {},
 }: Props) {
+  const client = useQueryClient();
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow className="bg-primary hover:bg-primary ">
             <TableHead className="text-white">Name</TableHead>
+            <TableHead className="text-white">category</TableHead>
+            <TableHead className="text-white">Sell price</TableHead>
+            <TableHead className="text-white">Buy price</TableHead>
+            <TableHead className="text-white">Selled</TableHead>
             <TableHead className="text-white">Created at</TableHead>
             <TableHead className="text-white">Action</TableHead>
           </TableRow>
@@ -52,13 +59,17 @@ function TableProductCategorySection({
             data?.map((item) => (
               <TableRow key={item?.id}>
                 <TableCell>{item?.name}</TableCell>
+                <TableCell>{item?.productCategory?.name || "-"}</TableCell>
+                <TableCell>{item?.sellPrice}</TableCell>
+                <TableCell>{item?.buyPrice}</TableCell>
+                <TableCell>{item?.selled}</TableCell>
                 <TableCell>
                   {new Date(item?.createdAt || "").toLocaleString()}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-3">
-                    <DeleteProductCategory item={item} />
-                    <UpdateProductCategory item={item} />
+                    <DeleteProduct item={item} />
+                    <UpdateProduct item={item} client={client} />
                   </div>
                 </TableCell>
               </TableRow>
@@ -101,60 +112,68 @@ function TableProductCategorySection({
     </div>
   );
 }
-const DeleteProductCategory = memo(
-  ({ item }: { item: Omit<productCategoryFormProps, "mutation"> }) => {
-    const mutationDelete = useMutationX({
-      api: "/product-category",
-      invalidateKey: "/product-category",
-      mutation: "delete",
-    });
-    const handleDelete = () => {
-      mutationDelete.mutate({ id: item?.id });
-    };
-    return (
-      <ModalAlert
-        handleSubmit={handleDelete}
-        labelSubmit="Delete"
-        title="Confirm"
-        desc={`Are you sure want to delete ${item?.name}`}
+const DeleteProduct = memo(({ item }: { item: productProps }) => {
+  const mutationDelete = useMutationX({
+    api: "/product",
+    invalidateKey: "/product",
+    mutation: "delete",
+  });
+  const handleDelete = () => {
+    mutationDelete.mutate({ id: item?.id });
+  };
+  return (
+    <ModalAlert
+      handleSubmit={handleDelete}
+      labelSubmit="Delete"
+      title="Confirm"
+      desc={`Are you sure want to delete ${item?.name}`}
+    >
+      <AlertDialogTrigger
+        disabled={mutationDelete.isPending}
+        className={` px-3 rounded-md  ${
+          mutationDelete.isPending
+            ? "bg-slate-200 animate-pulse cursor-not-allowed text-slate-600 hover:bg-slate-300"
+            : "bg-red-200 cursor-pointer text-red-600 hover:bg-red-300"
+        }`}
       >
-        <AlertDialogTrigger
-          disabled={mutationDelete.isPending}
-          className={` px-3 rounded-md  ${
-            mutationDelete.isPending
-              ? "bg-slate-200 animate-pulse cursor-not-allowed text-slate-600 hover:bg-slate-300"
-              : "bg-red-200 cursor-pointer text-red-600 hover:bg-red-300"
-          }`}
-        >
-          {mutationDelete.isPending ? "Deleting..." : "Delete"}
-        </AlertDialogTrigger>
-      </ModalAlert>
-    );
-  }
-);
+        {mutationDelete.isPending ? "Deleting..." : "Delete"}
+      </AlertDialogTrigger>
+    </ModalAlert>
+  );
+});
 
-const UpdateProductCategory = memo(
-  ({ item }: { item: Omit<productCategoryFormProps, "mutation"> }) => {
-    const [dataForm, setDataForm] = useState<productCategoryFormProps>({
+const UpdateProduct = memo(
+  ({ item, client }: { client: QueryClient; item: productProps }) => {
+    const [dataForm, setDataForm] = useState<productFormProps>({
       name: "",
       id: "",
-      mutation: "put",
+      desc: "",
+      productCategoryId: "",
+      mutation: "post",
+      sellPrice: null,
+      buyPrice: null,
     });
     return (
-      <ProductCategoryMutationSection
-        dataForm={dataForm}
-        setDataForm={setDataForm}
-      >
+      <ProductMutationSection dataForm={dataForm} setDataForm={setDataForm}>
         <AlertDialogTrigger
           onClick={() => {
-            setDataForm({ name: item?.name, id: item?.id, mutation: "put" });
+            client.removeQueries({ queryKey: [`/product/${item?.id}`] });
+            setDataForm({
+              name: item?.name,
+              desc: item?.desc,
+              id: item?.id,
+              productCategoryId: item?.productCategory.id,
+              mutation: "put",
+              sellPrice: item?.sellPrice,
+              buyPrice: item?.buyPrice,
+            });
           }}
           className="bg-green-200 px-3 rounded-md cursor-pointer text-green-600 hover:bg-green-300"
         >
           Update
         </AlertDialogTrigger>
-      </ProductCategoryMutationSection>
+      </ProductMutationSection>
     );
   }
 );
-export default TableProductCategorySection;
+export default TableProductSection;

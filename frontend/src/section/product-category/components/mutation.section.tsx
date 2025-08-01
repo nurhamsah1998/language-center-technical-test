@@ -11,25 +11,25 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AXIOS from "@/utils/axios";
-import { useEffect, useTransition, type ReactElement } from "react";
+import useMutationX from "@/hooks/useMutationX";
+import { useEffect, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 export type productCategoryFormProps = {
   name: string;
   id?: string;
-  mutation?: "post" | "put";
+  createdAt?: string;
+  mutation: "post" | "put";
 };
 
 function ProductCategoryMutationSection({
   children,
-  data = { name: "", mutation: "post" },
-  setData = () => {},
+  dataForm,
+  setDataForm = () => {},
 }: {
   children: ReactElement;
-  data?: productCategoryFormProps;
-  setData?: (props: productCategoryFormProps) => void;
+  dataForm: productCategoryFormProps;
+  setDataForm?: (props: productCategoryFormProps) => void;
 }) {
   const {
     control,
@@ -42,83 +42,46 @@ function ProductCategoryMutationSection({
       name: "",
     },
   });
-  const accessToken = localStorage.getItem("accessToken");
-  const refreshToken = localStorage.getItem("refreshToken");
-  const [isPending, startTransition] = useTransition();
+  const mutation = useMutationX({
+    api: "/product-category",
+    invalidateKey: "/product-category",
+    mutation: dataForm.mutation,
+    onSuccess() {
+      reset();
+      const elementCloseBtn = document.getElementById(
+        "close-btn-mutation-product-category"
+      );
+
+      if (elementCloseBtn) elementCloseBtn.click();
+    },
+  });
+
   const onSubmit = (values: productCategoryFormProps) => {
-    startTransition(async () => {
-      try {
-        /// PADA LOGIC INI BISA POST ATAU PUT TERGANTU DARI VALUE data.mutation
-        const res = await (AXIOS as any)[
-          data.mutation as keyof Pick<productCategoryFormProps, "mutation">
-        ](
-          `/product-category${data.mutation === "put" ? `/${data.id}` : ""}`,
-          values,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        toast.success(res?.data?.message);
-        reset();
-      } catch (error: any) {
-        /// LOGIC JIKA ACCESS TOKEN EXPIRED
-        if (
-          error?.response?.data?.message === "jwt expired" &&
-          error?.status === 401
-        ) {
-          const requestNewAccessToken = await AXIOS.post(`/auth/refresh`, {
-            refreshToken,
-          }).catch((refreshError) => {
-            toast.error((refreshError as any)?.response?.data?.message);
-            localStorage.clear();
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          });
-          const newAccessToken = requestNewAccessToken?.data;
-          localStorage.setItem("accessToken", newAccessToken);
-          const res = await (AXIOS as any)[
-            data.mutation as keyof Pick<productCategoryFormProps, "mutation">
-          ](
-            /// PADA LOGIC INI BISA POST ATAU PUT TERGANTU DARI VALUE data.mutation
-            `/product-category${data.mutation === "put" ? `/${data.id}` : ""}`,
-            values,
-            {
-              headers: {
-                Authorization: `Bearer ${newAccessToken}`,
-              },
-            }
-          );
-          toast.success(res?.data?.message);
-          return;
-        } else if (error?.status === 401) {
-          localStorage.clear();
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }
-        console.log(error);
-        toast.error((error as any)?.response?.data?.message);
-      }
+    mutation.mutate({
+      ...values,
+      /// JIKA MUTATION === put, MAKA INJECT VALUE id
+      ...(dataForm.mutation === "put" && { id: dataForm?.id }),
     });
   };
+
   const handleCancel = () => {
-    setData({ ...data, mutation: "post" });
+    reset();
+    setDataForm({ ...dataForm, mutation: "post" });
   };
+
   useEffect(() => {
-    if (data?.mutation === "put") {
-      setValue("name", data?.name);
+    if (dataForm?.mutation === "put" && dataForm?.id) {
+      setValue("name", dataForm?.name);
     }
-  }, [data]);
+  }, [dataForm]);
   return (
     <AlertDialog>
       {children}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {data.mutation === "post" ? "Create" : "Update"} product category
+            {dataForm.mutation === "post" ? "Create" : "Update"} product
+            category
           </AlertDialogTitle>
           <AlertDialogDescription>-</AlertDialogDescription>
         </AlertDialogHeader>
@@ -150,15 +113,24 @@ function ProductCategoryMutationSection({
                 )}
               />
             </div>
-            <button type="submit" className="hidden">
+            <button
+              disabled={mutation.isPending}
+              type="submit"
+              className="hidden"
+            >
               s
             </button>
           </form>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel
+            id="close-btn-mutation-product-category"
+            onClick={handleCancel}
+          >
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
-            disabled={isPending}
+            disabled={mutation.isPending}
             onClick={handleSubmit(onSubmit)}
           >
             Save

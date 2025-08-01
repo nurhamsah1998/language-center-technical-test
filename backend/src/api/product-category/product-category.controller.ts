@@ -27,7 +27,8 @@ export class ProductCategoryController {
   @Post()
   async Create(@Body() body: MutationProductCategoryDto) {
     try {
-      return await this.productCategoryService.Create(body);
+      const data = await this.productCategoryService.Create(body);
+      return { message: 'successfully create product category', data };
     } catch (error: any) {
       console.log(error);
       if (error?.code == 'P2002') {
@@ -54,17 +55,23 @@ export class ProductCategoryController {
     @Body() body: MutationProductCategoryDto,
   ) {
     try {
-      return await this.productCategoryService.Update({ id, body });
+      const data = await this.productCategoryService.Update({ id, body });
+      return { message: 'successfully update product category', data };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      if (error?.code == 'P2002') {
+        throw new BadRequestException('name already exist!');
+      } else {
+        throw new BadRequestException();
+      }
     }
   }
 
   @Delete(':id')
   async Remove(@Param('id') id: string) {
     try {
-      return await this.productCategoryService.Remove(id);
+      const data = await this.productCategoryService.Remove(id);
+      return { message: 'successfully delete product category', data };
     } catch (error) {
       console.log(error);
       throw new BadRequestException();

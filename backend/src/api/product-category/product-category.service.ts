@@ -18,12 +18,21 @@ export class ProductCategoryService {
   async FindAll(query: QueryInit) {
     const totalData = await this.prisma.productCategory.count({
       where: {
-        name: query.search,
+        name: {
+          contains: query.search,
+          mode: 'insensitive',
+        },
       },
     });
     const data = await this.prisma.productCategory.findMany({
       where: {
-        name: query.search,
+        name: {
+          contains: query.search,
+          mode: 'insensitive',
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
       skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,

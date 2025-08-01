@@ -13,43 +13,66 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMemo, type ReactElement } from "react";
+import { memo, useEffect, useMemo, useState, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
 import ProductCategoryMutationSection, {
   type productCategoryFormProps,
 } from "../../product-category/components/mutation.section";
 import useFetch from "@/hooks/useFetch";
+import useMutationX from "@/hooks/useMutationX";
+import type { productProps } from "../product.section";
+import { Textarea } from "@/components/ui/textarea";
 
 export type productFormProps = {
   name: string;
+  desc: string;
+  id?: string;
   sellPrice: number | null;
   buyPrice: number | null;
-  categoryId: string | undefined;
-  mutation: "post" | "patch";
+  stock?: number | null;
+  productCategoryId: string | undefined;
+  mutation: "post" | "put";
 };
 
 function ProductMutationSection({
   children,
-  data,
-  setData = () => {},
+  dataForm,
+  setDataForm = () => {},
 }: {
   children: ReactElement;
-  data: productFormProps;
-  setData: (props: productFormProps) => void;
+  dataForm: productFormProps;
+  setDataForm: (props: productFormProps) => void;
 }) {
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<productFormProps>({
     defaultValues: {
       name: "",
-      categoryId: "",
+      desc: "",
+      productCategoryId: "",
       sellPrice: null,
+      ...(dataForm?.mutation === "post" && {
+        stock: null,
+      }),
       buyPrice: null,
     },
   });
+  const [dataFormProductCategory, setDataFormProductCategory] =
+    useState<productCategoryFormProps>({
+      name: "",
+      mutation: "post",
+    });
+  /// GET PRODUCT BY ID
+  const { data: productById } = useFetch({
+    api: `/product/${dataForm?.id}`,
+    invalidateKey: `/product/${dataForm?.id}`,
+    enabled: Boolean(dataForm?.mutation === "put"),
+  });
+  /// GET LIST OF PRODUCT CATEGORY
   const { items, isLoading } = useFetch({
     api: "/product-category",
     invalidateKey: "/product-category",
@@ -63,24 +86,62 @@ function ProductMutationSection({
       })) || [],
     [items]
   );
+  const mutation = useMutationX({
+    api: "/product",
+    invalidateKey: "/product",
+    mutation: dataForm.mutation,
+    onSuccess() {
+      reset();
+      const elementCloseBtn = document.getElementById(
+        "close-btn-mutation-product"
+      );
+
+      if (elementCloseBtn) elementCloseBtn.click();
+    },
+  });
 
   const onSubmit = (values: productFormProps) => {
-    console.log(values);
+    mutation.mutate({
+      ...values,
+      sellPrice: Number(values?.sellPrice),
+      /// JIKA MUTATION POST, MAKA KIRIM STOCK
+      ...(dataForm?.mutation === "post" && {
+        stock: Number(values?.stock),
+      }),
+      buyPrice: Number(values?.buyPrice),
+      /// JIKA MUTATION === put, MAKA INJECT VALUE id
+      ...(dataForm.mutation === "put" && { id: dataForm?.id }),
+    });
   };
+
   const handleCancel = () => {
-    setData({ ...data, mutation: "post" });
+    reset();
+    setDataForm({ ...dataForm, mutation: "post" });
   };
+
+  useEffect(() => {
+    if (dataForm?.mutation === "put" && productById?.data?.id) {
+      const { name, buyPrice, sellPrice, productCategory, desc }: productProps =
+        productById?.data || {};
+      setValue("name", name);
+      setValue("buyPrice", buyPrice);
+      setValue("sellPrice", sellPrice);
+      setValue("desc", desc);
+      setValue("productCategoryId", productCategory?.id);
+    }
+    return () => {};
+  }, [productById?.data, dataForm?.mutation]);
   return (
     <AlertDialog>
       {children}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {data.mutation === "post" ? "Create" : "Update"} product
+            {dataForm.mutation === "post" ? "Create" : "Update"} product
           </AlertDialogTitle>
           <AlertDialogDescription>-</AlertDialogDescription>
         </AlertDialogHeader>
-        <div>
+        <div className="max-h-[400px] overflow-auto">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <Controller
@@ -109,7 +170,25 @@ function ProductMutationSection({
               />
               <Controller
                 control={control}
-                name="categoryId"
+                name="desc"
+                render={({ field: { onChange, value } }) => (
+                  <div className="grid gap-3">
+                    <Label htmlFor="name">Description</Label>
+                    <div>
+                      <Textarea
+                        onChange={onChange}
+                        value={value || ""}
+                        id="desc"
+                        className=" resize-none h-40"
+                        placeholder="some description product"
+                      />
+                    </div>
+                  </div>
+                )}
+              />
+              <Controller
+                control={control}
+                name="productCategoryId"
                 rules={{
                   required: "category is required",
                 }}
@@ -125,14 +204,19 @@ function ProductMutationSection({
                           value={value}
                           options={productCategoryOption}
                         />
-                        <ProductCategoryMutationSection>
-                          <AlertDialogTrigger>Add new</AlertDialogTrigger>
+                        <ProductCategoryMutationSection
+                          setDataForm={setDataFormProductCategory}
+                          dataForm={dataFormProductCategory}
+                        >
+                          <AlertDialogTrigger disabled={mutation.isPending}>
+                            Add new
+                          </AlertDialogTrigger>
                         </ProductCategoryMutationSection>
                       </div>
 
-                      {errors?.categoryId && (
+                      {errors?.productCategoryId && (
                         <TextErrorForm>
-                          {errors?.categoryId?.message}
+                          {errors?.productCategoryId?.message}
                         </TextErrorForm>
                       )}
                     </div>
@@ -191,15 +275,55 @@ function ProductMutationSection({
                   </div>
                 )}
               />
+              {dataForm?.mutation === "post" && (
+                <Controller
+                  control={control}
+                  name="stock"
+                  rules={{
+                    required: "stock is required",
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="grid gap-3">
+                      <Label htmlFor="stock">Stock</Label>
+                      <div>
+                        <Input
+                          onChange={onChange}
+                          value={value || ""}
+                          id="stock"
+                          type="number"
+                          placeholder="500"
+                        />
+                        {errors?.stock && (
+                          <TextErrorForm>
+                            {errors?.stock?.message}
+                          </TextErrorForm>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                />
+              )}
             </div>
-            <button type="submit" className="hidden">
+            <button
+              disabled={mutation.isPending}
+              type="submit"
+              className="hidden"
+            >
               s
             </button>
           </form>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSubmit(onSubmit)}>
+          <AlertDialogCancel
+            id="close-btn-mutation-product"
+            onClick={handleCancel}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            disabled={mutation.isPending}
+            onClick={handleSubmit(onSubmit)}
+          >
             Save
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -208,4 +332,4 @@ function ProductMutationSection({
   );
 }
 
-export default ProductMutationSection;
+export default memo(ProductMutationSection);

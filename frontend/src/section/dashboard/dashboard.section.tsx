@@ -1,5 +1,4 @@
 import { useUserSession } from "@/store/user-session.store";
-import React from "react";
 
 function DashboardSection() {
   const { email } = useUserSession();

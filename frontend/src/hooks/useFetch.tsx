@@ -6,12 +6,13 @@ type Props = {
   api: string;
   invalidateKey: string;
   enabled?: boolean;
+  staleTime?: number;
   query?: Record<string, string | number>;
 };
 const objCleaner = (obj: Record<string, string | number>): {} => {
   try {
     for (const key in obj) {
-      if (!key) {
+      if (!obj[key]) {
         delete obj[key];
       }
     }
@@ -20,8 +21,13 @@ const objCleaner = (obj: Record<string, string | number>): {} => {
     return {};
   }
 };
-function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
-  const accessToken = localStorage.getItem("accessToken");
+function useFetch({
+  api,
+  invalidateKey,
+  staleTime = 0,
+  query = {},
+  enabled = true,
+}: Props) {
   const refreshToken = localStorage.getItem("refreshToken");
   const queryParams = new URLSearchParams(objCleaner(query));
   const queryFetch = useQuery({
@@ -30,7 +36,7 @@ function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
       try {
         const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
         return res;
@@ -71,6 +77,7 @@ function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
       }
     },
     enabled,
+    staleTime,
   });
   const items = queryFetch?.data?.data?.data;
   const { totalPage, totalData } = queryFetch?.data?.data?.meta || {};
@@ -78,7 +85,6 @@ function useFetch({ api, invalidateKey, query = {}, enabled = true }: Props) {
     totalPage,
     totalData,
     items,
-    accessToken,
     refreshToken,
     ...queryFetch,
   };
