@@ -41,8 +41,8 @@ function useMutationX({ api, invalidateKey, mutation }: Props) {
     }
   };
   const queryMutation = useMutation({
-    queryKey: [invalidateKey],
-    queryFn: async (values: any) => {
+    mutationKey: [invalidateKey as any],
+    mutationFn: async (values: any) => {
       try {
         const res = await AxiosMutation({ values, accessToken });
         toast.success(res?.data?.message);
