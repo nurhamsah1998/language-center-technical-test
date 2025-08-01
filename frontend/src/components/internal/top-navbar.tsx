@@ -33,6 +33,17 @@ function TopNavbar() {
   );
 }
 
+export const customerNavMenu = [
+  {
+    title: "Profile",
+    path: "/profile",
+  },
+  {
+    title: "My order",
+    path: "/my-order",
+  },
+];
+
 const ProfileAvatar = memo(() => {
   const { name } = useUserSession();
   const nav = useNavigate();
@@ -57,18 +68,15 @@ const ProfileAvatar = memo(() => {
           {name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => nav("/profile")}
-          className="cursor-pointer"
-        >
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => nav("/my-order")}
-          className="cursor-pointer"
-        >
-          My order
-        </DropdownMenuItem>
+        {customerNavMenu.map((item) => (
+          <DropdownMenuItem
+            key={item.path}
+            onClick={() => nav(`${item.path}`)}
+            className="cursor-pointer"
+          >
+            {item.title}
+          </DropdownMenuItem>
+        ))}
         <DropdownMenuItem onClick={handleLogOut} className="cursor-pointer">
           Log out
         </DropdownMenuItem>

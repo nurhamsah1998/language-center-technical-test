@@ -32,7 +32,7 @@ export class OrderController {
       };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException(error?.message || 'Bad request');
     }
   }
 
@@ -42,7 +42,7 @@ export class OrderController {
       return await this.orderService.FindAll(query);
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException(error?.message || 'Bad request');
     }
   }
 
@@ -52,18 +52,21 @@ export class OrderController {
       return await this.orderService.FindOne(id);
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException(error?.message || 'Bad request');
     }
   }
 
   @Put(':id')
-  async Update(@Param('id') id: string, @Body() body: UpdateStatusOrderDto) {
+  async UpdateStatus(
+    @Param('id') id: string,
+    @Body() body: UpdateStatusOrderDto,
+  ) {
     try {
       await this.orderService.UpdateStatus({ id, body });
       return { message: 'update successfully' };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException(error?.message || 'Bad request');
     }
   }
 }

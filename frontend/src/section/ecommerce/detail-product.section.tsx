@@ -13,14 +13,14 @@ function DetailProductSection() {
   const { id: userId } = useUserSession();
   const [qty, setQty] = useState<number>(1);
   const { data } = useFetch({
-    api: `/product/public${id ? `/${id}` : ""}`,
-    invalidateKey: `/product/public${id ? `/${id}` : ""}`,
+    api: `/product/public/${id}`,
+    invalidateKey: `/product/public/${id}`,
   });
   const nav = useNavigate();
   const product: productProps = data?.data;
   const mutation = useMutationX({
     api: "/order",
-    invalidateKey: "/order",
+    invalidateKey: `/product/public/${id}`,
     mutation: "post",
     onSuccess() {
       setQty(1);

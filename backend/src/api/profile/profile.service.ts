@@ -18,6 +18,7 @@ export class ProfileService {
       select: {
         id: true,
         email: true,
+        role: true,
         profile: {
           select: {
             name: true,

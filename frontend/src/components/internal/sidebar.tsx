@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import ModalAlert from "./modal-alert";
 
-export const navMenu = [
+export const adminNavMenu = [
   {
     title: "Dashboard",
     path: "/admin",
@@ -40,7 +40,7 @@ function Sidebar() {
           className="mt-3 flex flex-col justify-between "
         >
           <div className="mt-3 flex flex-col gap-3">
-            {navMenu.map((item) => (
+            {adminNavMenu.map((item) => (
               <div
                 className={`cursor-pointer  py-2 px-4 rounded-sm text-sm duration-150 ${
                   location.pathname === item.path

@@ -23,7 +23,9 @@ export class AuthGuardService implements CanActivate {
       const payload: UserSession = await this.jwtService.verifyAsync(token, {
         secret: process.env.ACCESS_TOKEN,
       });
-
+      if (payload.role !== 'Admin') {
+        throw new UnauthorizedException('only Admin can do this!');
+      }
       request['user'] = payload;
     } catch (error) {
       throw new UnauthorizedException(

@@ -17,21 +17,37 @@ export class OrderService {
       };
     }
     const totalCountOrder = await this.prisma.order.count();
-    return await this.prisma.order.create({
-      data: {
-        customerId: userSession.id as keyof UserSession,
-        status: 'Packaging',
-        orderCode: `ORDER-${totalCountOrder + 1}-${Math.floor(Math.random() * 2000)}`,
-        tracking: ['still in the shop'],
-        ProductOnOrder: {
-          createMany: {
-            data: body.products.map((item) => ({
-              productId: item.productId,
-              qty: item.qty,
-            })),
+    return await this.prisma.$transaction(async (ctx) => {
+      /// LOGIC PENGURANGAN STOCK KETIKA CUSTOMER MELAKUKAN TRANSAKSI
+      for (let index = 0; index < body.products.length; index++) {
+        const element = body.products[index];
+        await ctx.product.update({
+          where: {
+            id: element.productId,
+          },
+          data: {
+            stock: {
+              decrement: element.qty,
+            },
+          },
+        });
+      }
+      await ctx.order.create({
+        data: {
+          customerId: userSession.id as keyof UserSession,
+          status: 'Packaging',
+          orderCode: `ORDER-${totalCountOrder + 1}-${Math.floor(Math.random() * 2000)}`,
+          tracking: ['still in the shop'],
+          ProductOnOrder: {
+            createMany: {
+              data: body.products.map((item) => ({
+                productId: item.productId,
+                qty: item.qty,
+              })),
+            },
           },
         },
-      },
+      });
     });
   }
 
@@ -47,6 +63,17 @@ export class OrderService {
       },
       skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,
+      include: {
+        customer: {
+          select: {
+            profile: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
     const totalPage = Math.ceil(totalData / query.limit);
     return {
@@ -69,6 +96,15 @@ export class OrderService {
           select: {
             productId: true,
             qty: true,
+          },
+        },
+        customer: {
+          select: {
+            profile: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
