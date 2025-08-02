@@ -1,17 +1,21 @@
 import useFetch from "@/hooks/useFetch";
 import AreaChart from "./components/area-chart";
+import PieChart from "./components/pie-chart";
 
 function DashboardSection() {
-  const { data } = useFetch({
+  const { data: revenue } = useFetch({
     api: `/analytics/revenue`,
     invalidateKey: `/analytics/revenue`,
   });
-  const analyticsRevenue = data?.data;
-  console.log(analyticsRevenue, "<---");
+  const { data: productCount } = useFetch({
+    api: `/analytics/product-count`,
+    invalidateKey: `/analytics/product-count`,
+  });
   return (
     <div>
-      <div className=" relative">
-        <AreaChart />
+      <div>
+        <AreaChart analyticsRevenue={revenue?.data} />
+        <PieChart analyticsProductCount={productCount?.data} />
       </div>
     </div>
   );

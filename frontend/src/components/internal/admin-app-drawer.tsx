@@ -37,7 +37,7 @@ function AdminAppDrawer() {
 
       <AdminTopNavbar />
 
-      <div className="md:w-full p-3 overflow-hidden">
+      <div className="md:w-full p-3 overflow-x-hidden">
         <Card>
           <CardContent>
             <div className="text-xl font-bold text-slate-700 mb-3 md:mb-10">

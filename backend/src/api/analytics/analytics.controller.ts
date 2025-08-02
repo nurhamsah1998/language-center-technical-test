@@ -15,9 +15,19 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('revenue')
-  async FindAll() {
+  async GetRevenue() {
     try {
       return await this.analyticsService.GetRevenue();
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error?.message || 'Bad request');
+    }
+  }
+
+  @Get('product-count')
+  async GetProductCount() {
+    try {
+      return await this.analyticsService.GetProductCount();
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error?.message || 'Bad request');

@@ -1,18 +1,17 @@
 import type { ApexOptions } from "apexcharts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
-function AreaChart() {
+function AreaChart({
+  analyticsRevenue,
+}: {
+  analyticsRevenue: { date_gs: string; revenue: number }[];
+}) {
   const [state, setState] = useState<{
     options: ApexOptions;
     series: { name: string; data: number[] }[];
   }>({
-    series: [
-      {
-        name: "series1",
-        data: [31, 40, 28, 51, 42, 109, 100],
-      },
-    ],
+    series: [],
     options: {
       chart: {
         height: 350,
@@ -32,15 +31,7 @@ function AreaChart() {
       },
       xaxis: {
         type: "category",
-        categories: [
-          "2018-09-19T00:00:00.000Z",
-          "2018-09-19T01:30:00.000Z",
-          "2018-09-19T02:30:00.000Z",
-          "2018-09-19T03:30:00.000Z",
-          "2018-09-19T04:30:00.000Z",
-          "2018-09-19T05:30:00.000Z",
-          "2018-09-19T06:30:00.000Z",
-        ],
+        categories: [],
       },
       tooltip: {
         x: {
@@ -49,6 +40,25 @@ function AreaChart() {
       },
     },
   });
+  useEffect(() => {
+    setState({
+      options: {
+        ...state.options,
+        xaxis: {
+          type: "category",
+          categories: analyticsRevenue?.map((item) =>
+            new Date(item.date_gs).toDateString()
+          ),
+        },
+      },
+      series: [
+        {
+          name: "Revenue",
+          data: analyticsRevenue?.map((item) => item.revenue),
+        },
+      ],
+    });
+  }, [analyticsRevenue]);
   return (
     <div>
       <div className="text-md font-black text-slate-800">Revenue</div>
