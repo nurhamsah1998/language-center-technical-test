@@ -14,7 +14,7 @@ type Props = {
 
 let isRequestingNewAccessToken: boolean = false;
 let awaitingCount = 1;
-let maxAwaitingCount = 100;
+let maxAwaitingCount = 20;
 
 const objCleaner = (obj: Record<string, string | number>): {} => {
   try {
@@ -95,7 +95,11 @@ const fetching = async ({
             next("");
           }, 1000);
         });
-        return await fetching({ api, queryParams, refreshToken, onSuccess });
+        if (awaitingCount > maxAwaitingCount) {
+          throw new Error("Something wrong cannot get data");
+        } else {
+          return await fetching({ api, queryParams, refreshToken, onSuccess });
+        }
         /// JIKA TIDAK ADA ENDPOINT LAIN YANG MENCOBA
         /// REQUEST NEW ACCESS TOKEN, MAKA LANJUT REQUEST TANPA MENUNGGU
       } else {

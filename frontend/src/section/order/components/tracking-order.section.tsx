@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,7 +9,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import useFetch from "@/hooks/useFetch";
 import type { ReactElement } from "react";
-import type { orderProps } from "../order.section";
 
 function TrackingOrderSection({
   children,
