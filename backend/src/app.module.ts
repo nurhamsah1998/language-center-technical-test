@@ -8,9 +8,10 @@ import { GuardModule } from './guard/guard.module';
 import { ProductCategoryModule } from './api/product-category/product-category.module';
 import { ProductModule } from './api/product/product.module';
 import { OrderModule } from './api/order/order.module';
+import { AnalyticsModule } from './api/analytics/analytics.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, ProfileModule, GuardModule, ProductCategoryModule, ProductModule, OrderModule],
+  imports: [AuthModule, PrismaModule, ProfileModule, GuardModule, ProductCategoryModule, ProductModule, OrderModule, AnalyticsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -20,12 +20,12 @@ import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private service: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   async Register(@Body() body: AuthRegisterDto) {
     try {
-      await this.service.Register({ body });
+      await this.authService.Register({ body });
       return { message: 'register successfully!' };
     } catch (error) {
       console.log(error);
@@ -40,7 +40,7 @@ export class AuthController {
   @Post('login')
   async Login(@Body() body: AuthLoginDto): Promise<User> {
     try {
-      const res = await this.service.Login({ body });
+      const res = await this.authService.Login({ body });
       return res as unknown as User;
     } catch (error) {
       console.log(error);
@@ -51,7 +51,7 @@ export class AuthController {
   @Post('refresh')
   async RefreshToken(@Body() body: AuthRefreshTokenDto) {
     try {
-      const newToken = await this.service.RefreshToken({ body });
+      const newToken = await this.authService.RefreshToken({ body });
       return newToken;
     } catch (error: any) {
       console.log(error);
@@ -62,7 +62,7 @@ export class AuthController {
   @Post('forgot-password')
   async ForgotPassword(@Body() body: AuthForgotPasswordDto) {
     try {
-      const data = await this.service.ForgotPassword({ body });
+      const data = await this.authService.ForgotPassword({ body });
       return {
         linkResetPassword: `/reset-password/${(data as User)?.forgotPasswordToken}`,
         message:
@@ -80,7 +80,7 @@ export class AuthController {
     @Param('forgotPasswordToken') forgotPasswordToken: string,
   ) {
     try {
-      await this.service.ResetPassword({ body, forgotPasswordToken });
+      await this.authService.ResetPassword({ body, forgotPasswordToken });
       return { message: 'your password is successfully reset' };
     } catch (error: any) {
       console.log(error);

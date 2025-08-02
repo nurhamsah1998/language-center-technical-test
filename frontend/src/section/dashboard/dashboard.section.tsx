@@ -1,9 +1,20 @@
-import { useUserSession } from "@/store/user-session.store";
+import useFetch from "@/hooks/useFetch";
+import AreaChart from "./components/area-chart";
 
 function DashboardSection() {
-  const { email } = useUserSession();
-  console.log(email);
-  return <div>DashboardSection</div>;
+  const { data } = useFetch({
+    api: `/analytics/revenue`,
+    invalidateKey: `/analytics/revenue`,
+  });
+  const analyticsRevenue = data?.data;
+  console.log(analyticsRevenue, "<---");
+  return (
+    <div>
+      <div className=" relative">
+        <AreaChart />
+      </div>
+    </div>
+  );
 }
 
 export default DashboardSection;

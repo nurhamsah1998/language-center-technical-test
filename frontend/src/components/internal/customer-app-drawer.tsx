@@ -30,7 +30,7 @@ function CustomerAppDrawer() {
       <div className="p-3">
         <Card>
           <CardContent>
-            <div className="text-xl font-bold text-slate-700 mb-3">
+            <div className="text-xl font-bold text-slate-700 mb-3 md:mb-10">
               {labelHeader?.title || ""}
             </div>
             <Outlet />

@@ -151,6 +151,7 @@ export class OrderService {
       };
     }
     await this.prisma.$transaction(async (ctx) => {
+      let revenue = 0;
       /// LOGIC PENAMBAHAN TOTAL PENJUALAN DI SETIAP ORDER PRODUCT JIKA STATUS SELESAI / Done
       if (body.status === 'Done') {
         for (let index = 0; index < dataOrder.ProductOnOrder.length; index++) {
@@ -167,13 +168,22 @@ export class OrderService {
           });
         }
       }
-
+      /// HITUNG PENDAPATAN KETIKA STATUS Done
+      if (body.status === 'Done') {
+        revenue = dataOrder.ProductOnOrder.map(
+          (item) => item.product.sellPrice * item.qty,
+        ).reduce((a, b) => a + b, 0);
+      }
       await ctx.order.update({
         where: {
           id,
         },
         data: {
           status: body.status,
+          ...(body.status === 'Done' && {
+            revenue,
+            tracking: ['Receiving order', 'In the shop', 'Done'],
+          }),
         },
       });
     });

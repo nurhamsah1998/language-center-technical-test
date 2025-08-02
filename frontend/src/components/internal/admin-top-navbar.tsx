@@ -3,13 +3,8 @@ import { adminNavMenu } from "./sidebar";
 
 function AdminTopNavbar() {
   return (
-    <div className="bg-primary z-[999] sticky top-0 text-white p-3 flex justify-between items-center">
-      <div
-        onClick={() => (window.location.href = "/")}
-        className=" cursor-pointer"
-      >
-        E commerce
-      </div>
+    <div className="bg-primary z-[99] sticky top-0 md:hidden text-white p-3 flex justify-between items-center">
+      <div>E commerce</div>
       <div>
         {localStorage.getItem("accessToken") ? (
           <ProfileAvatar navMenu={adminNavMenu} />

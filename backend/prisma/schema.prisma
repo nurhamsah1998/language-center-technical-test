@@ -87,6 +87,7 @@ model Order {
   customer       User             @relation(fields: [customerId], references: [id])
   ProductOnOrder ProductOnOrder[]
   status         StatusOrder      @default(Packaging)
+  revenue        Int?             @default(0)
   tracking       Json             @default("[]")
   customerId     String           @db.Uuid()
   createdAt      DateTime         @default(now())

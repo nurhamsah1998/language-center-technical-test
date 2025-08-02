@@ -88,7 +88,7 @@ function TableOrderSection({
           )}
         </TableBody>
       </Table>
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-3">
         <ReactPaginate
           containerClassName=" flex gap-3"
           pageLinkClassName="px-2 py-1"

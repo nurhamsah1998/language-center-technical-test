@@ -53,30 +53,27 @@ function useFetch({
         ) {
           /// REQUEST ACCESS TOKEN BARU
 
-          await AXIOS.post(`/auth/refresh`, {
+          const requestNewAccessToken = await AXIOS.post(`/auth/refresh`, {
             refreshToken,
-          })
-            .then(async (requestNewAccessToken) => {
-              /// SET ACCESS TOKEN BARU KE LOCALSTORAGE
-              const newAccessToken = requestNewAccessToken?.data;
-              localStorage.setItem("accessToken", newAccessToken);
-              /// MELAKUKAN MUTATION ULANG SETELAH MENDAPATKAN ACCESS TOKEN BARU
-              const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
-                headers: {
-                  Authorization: `Bearer ${newAccessToken}`,
-                },
-              });
-              onSuccess(res);
-              return res;
-            })
-            .catch((refreshError) => {
-              /// LOG OUT OTOMATIS JIKA REFRESH TOKEN DI DB TIDAK ADA ATAU TIDAK VALID
-              toast.error((refreshError as any)?.response?.data?.message);
-              localStorage.clear();
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            });
+          }).catch((refreshError) => {
+            /// LOG OUT OTOMATIS JIKA REFRESH TOKEN DI DB TIDAK ADA ATAU TIDAK VALID
+            toast.error((refreshError as any)?.response?.data?.message);
+            localStorage.clear();
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          });
+          /// SET ACCESS TOKEN BARU KE LOCALSTORAGE
+          const newAccessToken = requestNewAccessToken?.data;
+          localStorage.setItem("accessToken", newAccessToken);
+          /// MELAKUKAN MUTATION ULANG SETELAH MENDAPATKAN ACCESS TOKEN BARU
+          const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
+            headers: {
+              Authorization: `Bearer ${newAccessToken}`,
+            },
+          });
+          onSuccess(res);
+          return res;
         } else if (error?.status === 401) {
           localStorage.clear();
           setTimeout(() => {

@@ -34,13 +34,13 @@ function AdminAppDrawer() {
       <div className="md:flex hidden">
         <Sidebar />
       </div>
-      <div className="md:hidden block">
-        <AdminTopNavbar />
-      </div>
+
+      <AdminTopNavbar />
+
       <div className="md:w-full p-3 overflow-hidden">
         <Card>
           <CardContent>
-            <div className="text-xl font-bold text-slate-700 mb-3">
+            <div className="text-xl font-bold text-slate-700 mb-3 md:mb-10">
               {labelHeader?.title || "-"}
             </div>
             <Outlet />

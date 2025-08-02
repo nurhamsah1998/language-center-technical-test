@@ -24,7 +24,7 @@ export const customerNavMenu = [
 
 function CustomerTopNavbar() {
   return (
-    <div className="bg-primary z-[999] sticky top-0 text-white p-3 flex justify-between items-center">
+    <div className="bg-primary z-[99] sticky top-0 text-white p-3 flex justify-between items-center">
       <div
         onClick={() => (window.location.href = "/")}
         className=" cursor-pointer"
@@ -65,7 +65,7 @@ export const ProfileAvatar = memo(
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className=" z-[100]">
           <DropdownMenuLabel className=" max-w-[145px] text-ellipsis overflow-hidden text-nowrap">
             {name}
           </DropdownMenuLabel>

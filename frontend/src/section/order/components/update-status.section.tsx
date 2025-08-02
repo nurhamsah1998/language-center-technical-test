@@ -105,7 +105,7 @@ function OrderUpdateStatusSection({
           <AlertDialogTitle>Update status</AlertDialogTitle>
           <AlertDialogDescription>-</AlertDialogDescription>
         </AlertDialogHeader>
-        <div>
+        <div className="max-h-[300px] overflow-auto">
           <div className="p-2 border-2 border-slate-400 mb-5">
             <p className="text-sm leading-3 text-slate-600">Product order : </p>
             <div className="mt-3">

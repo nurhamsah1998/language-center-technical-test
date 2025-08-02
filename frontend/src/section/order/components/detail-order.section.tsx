@@ -34,7 +34,7 @@ function DetailOrderSection({
           <AlertDialogTitle>Detail order</AlertDialogTitle>
           <AlertDialogDescription>-</AlertDialogDescription>
         </AlertDialogHeader>
-        <div>
+        <div className="max-h-[300px] overflow-auto">
           {isLoading ? (
             <div>
               <p className="text-center font-bold text-slate-500 text-lg py-14 animate-pulse">

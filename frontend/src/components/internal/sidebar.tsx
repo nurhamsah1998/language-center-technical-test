@@ -40,7 +40,7 @@ function Sidebar() {
   };
   return (
     <>
-      <div className=" w-[300px] p-3">
+      <div className=" w-[300px] p-3 relative">
         <div className="bg-primary text-white py-2 px-4 rounded-sm">
           E Commerce
         </div>

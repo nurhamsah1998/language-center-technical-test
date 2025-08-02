@@ -93,7 +93,7 @@ function ProductSection() {
   }, 1000);
   return (
     <div>
-      <div className="flex justify-between">
+      <div className="md:flex grid gap-3 md:justify-between">
         <div className="flex gap-3">
           <Input onChange={handleSearch} placeholder="Search product" />
           <SelectOption

@@ -48,12 +48,12 @@ function MainEcommerceSection() {
   };
   return (
     <div>
-      <div className="flex justify-between mb-10">
+      <div className="md:flex grid gap-3 md:justify-between items-center mb-10">
         <div>
           <p className="text-2xl">Welcome</p>
           <p className="text-sm text-slate-600">happy shopping</p>
         </div>
-        <div className="w-xs">
+        <div className="w-full md:w-xs">
           <SelectOption
             disabled={isLoadingProductCategory}
             placeholder="category"
