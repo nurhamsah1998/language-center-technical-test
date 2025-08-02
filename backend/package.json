@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "author": "",
-  "private": true,
   "license": "UNLICENSED",
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -21,7 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "setup": "npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed && npm run build && npm run start:prod"
+    "setup": "npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed && npm run build && echo \"SUCCESSFULLY INSTALLED NOW RUN THIS COMMAND 'npm run start-technical-test-language-center' \""
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

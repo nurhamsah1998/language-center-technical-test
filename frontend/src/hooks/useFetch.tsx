@@ -96,6 +96,7 @@ const fetching = async ({
           }, 1000);
         });
         if (awaitingCount > maxAwaitingCount) {
+          awaitingCount = 1;
           throw new Error("Something wrong cannot get data");
         } else {
           return await fetching({ api, queryParams, refreshToken, onSuccess });

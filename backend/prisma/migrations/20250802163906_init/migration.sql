@@ -62,6 +62,7 @@ CREATE TABLE "public"."orders" (
     "id" UUID NOT NULL,
     "orderCode" TEXT NOT NULL,
     "status" "public"."StatusOrder" NOT NULL DEFAULT 'Packaging',
+    "revenue" INTEGER DEFAULT 0,
     "tracking" JSONB NOT NULL DEFAULT '[]',
     "customerId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

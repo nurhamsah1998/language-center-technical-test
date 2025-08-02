@@ -1,0 +1,25 @@
+{
+  "name": "technical-test-language-center",
+  "version": "1.0.0",
+  "private": "true",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install-technical-test-language-center": "npm install --legacy-peer-deps && npm run build --workspace=frontend && npm run setup --workspace=backend",
+    "start-technical-test-language-center": "concurrently \"npm run preview --workspace=frontend\" \"npm run start:prod --workspace=backend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nurhamsah1998/language-center-technical-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nurhamsah1998/language-center-technical-test/issues"
+  },
+  "homepage": "https://github.com/nurhamsah1998/language-center-technical-test#readme",
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
