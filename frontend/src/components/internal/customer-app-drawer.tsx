@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import TopNavbar, { customerNavMenu } from "./top-navbar";
+import CustomerTopNavbar, { customerNavMenu } from "./customer-top-navbar";
 import useFetch from "@/hooks/useFetch";
 import { useUserSession } from "@/store/user-session.store";
 import { Card, CardContent } from "../ui/card";
@@ -26,12 +26,12 @@ function CustomerAppDrawer() {
   );
   return (
     <div>
-      <TopNavbar />
+      <CustomerTopNavbar />
       <div className="p-3">
         <Card>
           <CardContent>
             <div className="text-xl font-bold text-slate-700 mb-3">
-              {labelHeader?.title || "-"}
+              {labelHeader?.title || ""}
             </div>
             <Outlet />
           </CardContent>

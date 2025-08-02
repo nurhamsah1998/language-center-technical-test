@@ -5,16 +5,20 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UserSession } from 'src/api/auth/types';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
@@ -23,9 +27,14 @@ export class AuthGuardService implements CanActivate {
       const payload: UserSession = await this.jwtService.verifyAsync(token, {
         secret: process.env.ACCESS_TOKEN,
       });
-      if (payload.role !== 'Admin') {
+      /// VALIDASI UNTUK PROTEKSI API YANG HANYA BISA DI ACCESS OLEH ROLE ADMIN
+      if (
+        payload.role !== 'Admin' &&
+        this.reflector.get('isAdmin', context.getHandler())
+      ) {
         throw new UnauthorizedException('only Admin can do this!');
       }
+
       request['user'] = payload;
     } catch (error) {
       throw new UnauthorizedException(

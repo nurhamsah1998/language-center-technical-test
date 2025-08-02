@@ -39,7 +39,9 @@ function DetailProductSection() {
   return (
     <div className="grid md:flex gap-10">
       <div>
-        <div className=" w-full md:w-[400px] h-[300px] bg-slate-600 rounded-md" />
+        <div className=" font-bold text-slate-600 text-2xl flex justify-center items-center w-full md:w-[400px] h-[300px] bg-slate-300 rounded-md">
+          No image
+        </div>
       </div>
       <div>
         <div>

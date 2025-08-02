@@ -13,7 +13,7 @@ type profileFormProps = {
   phoneNumber: string;
 };
 function ProfileSection() {
-  const { id: userId, isLoading, phoneNumber, name } = useUserSession();
+  const { id: userId, isLoading, phoneNumber, name, role } = useUserSession();
   const {
     control,
     handleSubmit,
@@ -89,7 +89,11 @@ function ProfileSection() {
           />
           <div className="mt-4 text-sm">
             <a
-              href="/change-my-password"
+              href={
+                role === "Customer"
+                  ? "/change-my-password"
+                  : "/admin/change-my-password"
+              }
               className="underline underline-offset-4"
             >
               Change password

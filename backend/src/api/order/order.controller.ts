@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Req,
+  SetMetadata,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto, QueryOrder, UpdateStatusOrderDto } from './order.dto';
@@ -23,6 +24,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
+  @SetMetadata('isAdmin', false)
   async Create(@Body() body: CreateOrderDto, @Req() request: Request) {
     try {
       await this.orderService.Create({ body, request });
@@ -37,9 +39,21 @@ export class OrderController {
   }
 
   @Get()
-  async FindAll(@Query() query: QueryOrder) {
+  @SetMetadata('isAdmin', false)
+  async FindAll(@Query() query: QueryOrder, @Req() request: Request) {
     try {
-      return await this.orderService.FindAll(query);
+      return await this.orderService.FindAll({ query, request });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error?.message || 'Bad request');
+    }
+  }
+
+  @Get(':id/tracking')
+  @SetMetadata('isAdmin', false)
+  async OrderTracking(@Param('id') id: string) {
+    try {
+      return await this.orderService.OrderTracking(id);
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error?.message || 'Bad request');

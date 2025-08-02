@@ -43,6 +43,7 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
           phoneNumber,
           email,
           id,
+          role,
         });
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);

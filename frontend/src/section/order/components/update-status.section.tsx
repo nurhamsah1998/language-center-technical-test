@@ -15,10 +15,11 @@ import useFetch from "@/hooks/useFetch";
 import useMutationX from "@/hooks/useMutationX";
 import { useEffect, type ReactElement } from "react";
 import { Controller, useForm } from "react-hook-form";
+import type { orderProps } from "../order.section";
 
 export type orderFormProps = {
   id?: string | null;
-  status: "Packaging" | "Deliver" | "Done";
+  status: "Packaging" | "Deliver" | "Done" | "";
 };
 
 const statusOption = [
@@ -53,7 +54,7 @@ function OrderUpdateStatusSection({
     formState: { errors },
   } = useForm<orderFormProps>({
     defaultValues: {
-      status: "Deliver",
+      status: "",
     },
   });
 
@@ -77,7 +78,7 @@ function OrderUpdateStatusSection({
     invalidateKey: `/order/${dataForm?.id}`,
     enabled: Boolean(dataForm?.id),
   });
-
+  const dataOrder: orderProps = orderById?.data;
   const onSubmit = (values: orderFormProps) => {
     if (isLoading) return;
     mutation.mutate({
@@ -92,10 +93,10 @@ function OrderUpdateStatusSection({
   };
 
   useEffect(() => {
-    if (orderById?.data?.id) {
-      setValue("status", orderById?.data?.status);
+    if (dataOrder?.id) {
+      setValue("status", dataOrder?.status);
     }
-  }, [dataForm]);
+  }, [dataOrder]);
   return (
     <AlertDialog>
       {children}
@@ -105,6 +106,35 @@ function OrderUpdateStatusSection({
           <AlertDialogDescription>-</AlertDialogDescription>
         </AlertDialogHeader>
         <div>
+          <div className="p-2 border-2 border-slate-400 mb-5">
+            <p className="text-sm leading-3 text-slate-600">Product order : </p>
+            <div className="mt-3">
+              {dataOrder?.ProductOnOrder?.map((item, idx) => (
+                <div className="mb-3" key={idx}>
+                  <div>
+                    <p className="text-sm leading-3 text-slate-600">name : </p>
+                    <p className="text-md font-bold">{item?.product?.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm leading-3 text-slate-600">qty : </p>
+                    <p className="text-md font-bold">{item?.qty}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm leading-3 text-slate-600">price : </p>
+                    <p className="text-md font-bold">
+                      Rp{item?.product?.sellPrice}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm leading-3 text-slate-600">total : </p>
+                    <p className="text-md font-bold">
+                      Rp{item?.product?.sellPrice * item?.qty}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <Controller

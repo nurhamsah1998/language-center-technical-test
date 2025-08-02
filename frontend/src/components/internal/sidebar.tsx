@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import ModalAlert from "./modal-alert";
+import { useUserSession } from "@/store/user-session.store";
 
 export const adminNavMenu = [
   {
@@ -19,11 +20,21 @@ export const adminNavMenu = [
     title: "Order",
     path: "/admin/order",
   },
+  {
+    title: "Profile",
+    path: "/admin/profile",
+  },
+  {
+    title: "Change password",
+    path: "/admin/change-my-password",
+  },
 ];
 function Sidebar() {
   const nav = useNavigate();
+  const { logout } = useUserSession();
   const location = useLocation();
   const handleLogOut = () => {
+    logout();
     localStorage.clear();
     window.location.reload();
   };
@@ -40,19 +51,23 @@ function Sidebar() {
           className="mt-3 flex flex-col justify-between "
         >
           <div className="mt-3 flex flex-col gap-3">
-            {adminNavMenu.map((item) => (
-              <div
-                className={`cursor-pointer  py-2 px-4 rounded-sm text-sm duration-150 ${
-                  location.pathname === item.path
-                    ? "bg-slate-500 text-white"
-                    : "text-slate-900 hover:bg-slate-200"
-                }`}
-                onClick={() => nav(item.path)}
-                key={item.path}
-              >
-                {item.title}
-              </div>
-            ))}
+            {adminNavMenu.map((item) => {
+              if (item?.path !== "/admin/change-my-password") {
+                return (
+                  <div
+                    className={`cursor-pointer py-2 px-4 rounded-sm text-sm duration-150 ${
+                      location.pathname === item.path
+                        ? "bg-slate-500 text-white"
+                        : "text-slate-900 hover:bg-slate-200"
+                    }`}
+                    onClick={() => nav(item.path)}
+                    key={item.path}
+                  >
+                    {item.title}
+                  </div>
+                );
+              }
+            })}
           </div>
           <div>
             <ModalAlert

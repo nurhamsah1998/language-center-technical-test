@@ -76,6 +76,7 @@ function ProductMutationSection({
   const { items, isLoading } = useFetch({
     api: "/product-category",
     invalidateKey: "/product-category",
+    enabled: Boolean(dataForm?.mutation === "post"),
   });
 
   const productCategoryOption = useMemo(

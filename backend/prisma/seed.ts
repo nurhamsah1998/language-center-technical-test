@@ -1,8 +1,8 @@
-/// big thanks : https://github.com/prisma/prisma/discussions/19669#discussioncomment-12852313
-import { PrismaClient } from 'generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-const prisma = new PrismaClient();
+const prisma: PrismaService = new PrismaClient();
 async function main() {
   /// CREATE ACCOUNT ADMIN
   await prisma.user.create({
@@ -18,6 +18,7 @@ async function main() {
       },
     },
   });
+
   /// CREATE ACCOUNT CUSTOMER
   await prisma.user.create({
     data: {
@@ -33,10 +34,29 @@ async function main() {
     },
   });
   /// CREATE PRODUCT CATEGORY
-  await prisma.productCategory.create({
-    data: {
-      name: "Book's",
-    },
+  const category = ['Books', 'Course', 'Flowers', 'Tools'];
+  const productCategory = await prisma.productCategory.createManyAndReturn({
+    data: category.map((item) => ({ name: item })),
+  });
+  /// CREATE PRODUCT DUMMY
+  await prisma.product.createMany({
+    data: Array(50)
+      .fill('')
+      .map((_, index) => {
+        const randomCategory =
+          productCategory[
+            Math.floor(Math.random() * (productCategory.length - 1))
+          ];
+        return {
+          name: `Product ${index}`,
+          sellPrice: 100 * (index + 1),
+          stock: 100,
+          buyPrice: 100 * (index + 1) - 50,
+          selled: 0,
+          desc: 'this is desc product',
+          productCategoryId: randomCategory.id,
+        };
+      }),
   });
 }
 main()

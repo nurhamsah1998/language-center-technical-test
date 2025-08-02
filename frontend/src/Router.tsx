@@ -28,15 +28,23 @@ function Router() {
         },
         {
           element: <ProductdPage />,
-          path: "admin/product",
+          path: "product",
         },
         {
           element: <ProductCategoryPage />,
-          path: "admin/product-category",
+          path: "product-category",
         },
         {
           element: <OrderPage />,
-          path: "admin/order",
+          path: "order",
+        },
+        {
+          element: <ProfilePage />,
+          path: "profile",
+        },
+        {
+          element: <ChangePasswordPage />,
+          path: "change-my-password",
         },
       ],
     },

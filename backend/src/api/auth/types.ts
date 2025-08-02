@@ -1,5 +1,5 @@
 // eslint-disable-next-line prettier/prettier
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 export type UserSession = {
   email: string | undefined;

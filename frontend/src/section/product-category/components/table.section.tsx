@@ -53,7 +53,7 @@ function TableProductCategorySection({
               <TableRow key={item?.id}>
                 <TableCell>{item?.name}</TableCell>
                 <TableCell>
-                  {new Date(item?.createdAt || "").toLocaleString()}
+                  {new Date(item?.createdAt || "").toDateString()}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-3">

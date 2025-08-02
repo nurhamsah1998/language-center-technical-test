@@ -11,6 +11,7 @@ type Props = {
   onSuccess?: (arg: AxiosResponse<any, any>) => void;
   query?: Record<string, string | number>;
 };
+
 const objCleaner = (obj: Record<string, string | number>): {} => {
   try {
     for (const key in obj) {
@@ -50,28 +51,32 @@ function useFetch({
           error?.response?.data?.message === "jwt expired" &&
           error?.status === 401
         ) {
-          /// REQUEST ACCESS TOKEM BARU
-          const requestNewAccessToken = await AXIOS.post(`/auth/refresh`, {
+          /// REQUEST ACCESS TOKEN BARU
+
+          await AXIOS.post(`/auth/refresh`, {
             refreshToken,
-          }).catch((refreshError) => {
-            /// LOG OUT OTOMATIS JIKA REFRESH TOKEN DI DB TIDAK ADA ATAU TIDAK VALID
-            toast.error((refreshError as any)?.response?.data?.message);
-            localStorage.clear();
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          });
-          /// SET ACCESS TOKEN BARU KE LOCALSTORAGE
-          const newAccessToken = requestNewAccessToken?.data;
-          localStorage.setItem("accessToken", newAccessToken);
-          /// MELAKUKAN MUTATION ULANG SETELAH MENDAPATKAN ACCESS TOKEN BARU
-          const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
-            headers: {
-              Authorization: `Bearer ${newAccessToken}`,
-            },
-          });
-          onSuccess(res);
-          return res;
+          })
+            .then(async (requestNewAccessToken) => {
+              /// SET ACCESS TOKEN BARU KE LOCALSTORAGE
+              const newAccessToken = requestNewAccessToken?.data;
+              localStorage.setItem("accessToken", newAccessToken);
+              /// MELAKUKAN MUTATION ULANG SETELAH MENDAPATKAN ACCESS TOKEN BARU
+              const res = await AXIOS.get(`${api}?${queryParams.toString()}`, {
+                headers: {
+                  Authorization: `Bearer ${newAccessToken}`,
+                },
+              });
+              onSuccess(res);
+              return res;
+            })
+            .catch((refreshError) => {
+              /// LOG OUT OTOMATIS JIKA REFRESH TOKEN DI DB TIDAK ADA ATAU TIDAK VALID
+              toast.error((refreshError as any)?.response?.data?.message);
+              localStorage.clear();
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            });
         } else if (error?.status === 401) {
           localStorage.clear();
           setTimeout(() => {

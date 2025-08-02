@@ -15,6 +15,14 @@ export type orderProps = {
   id: string;
   status: "Packaging" | "Deliver" | "Done";
   createdAt: string;
+  ProductOnOrder?: {
+    productId: string;
+    product: {
+      name: string;
+      sellPrice: number;
+    };
+    qty: number;
+  }[];
   orderCode: string;
   customer: {
     id: string;

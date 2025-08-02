@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   Min,
 } from 'class-validator';
@@ -86,9 +88,18 @@ export class UpdateProductDto {
   sellPrice: number;
 }
 
+enum EnumSortCreatedAt {
+  'asc' = 'asc',
+  'desc' = 'desc',
+}
 export class QueryProduct extends QueryInit {
-  //   @ApiProperty({ example: 'some uuid' })
-  //   @IsNotEmpty()
-  //   @IsString()
-  //   sort: string;
+  @ApiProperty({ required: false })
+  @IsUUID()
+  @IsOptional()
+  productCategoryId: string;
+
+  @ApiProperty({ example: 'asc' })
+  @IsEnum(EnumSortCreatedAt)
+  @IsNotEmpty()
+  sortCreatedAt: 'asc' | 'desc' = 'asc';
 }

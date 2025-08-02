@@ -57,6 +57,7 @@ export class ProductService {
           contains: query.search,
           mode: 'insensitive',
         },
+        productCategoryId: query.productCategoryId,
       },
     });
     const data = await this.prisma.product.findMany({
@@ -65,11 +66,12 @@ export class ProductService {
           contains: query.search,
           mode: 'insensitive',
         },
+        productCategoryId: query.productCategoryId,
       },
       skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,
       orderBy: {
-        createdAt: 'desc',
+        createdAt: query.sortCreatedAt,
       },
       select: {
         id: true,

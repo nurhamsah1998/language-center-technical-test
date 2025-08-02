@@ -10,7 +10,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 import { UserSession } from './types';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class AuthService {
   private accessTokenExpiresIn = '20s';
   private refreshTokenExpiresIn = '7d';
 
-  async Register({ body }: { body: AuthRegisterDto }) {
+  async Register({ body }: { body: AuthRegisterDto }): Promise<User> {
     return await this.prisma.user.create({
       data: {
         email: body?.email,
@@ -90,6 +90,7 @@ export class AuthService {
         id: true,
         email: true,
         role: true,
+        refreshToken: true,
         profile: {
           select: {
             name: true,
@@ -98,7 +99,8 @@ export class AuthService {
         },
       },
     });
-    return { ...data, accessToken, refreshToken };
+
+    return { ...data, accessToken };
   }
 
   async RefreshToken({ body }: { body: AuthRefreshTokenDto }) {
@@ -125,9 +127,12 @@ export class AuthService {
       };
     }
     try {
-      await this.jwtService.verifyAsync((user as any)?.refreshToken, {
-        secret: process.env.REFRESH_TOKEN,
-      });
+      await this.jwtService.verifyAsync(
+        (user as unknown as User)?.refreshToken as string,
+        {
+          secret: process.env.REFRESH_TOKEN,
+        },
+      );
     } catch {
       throw {
         message: `refresh token has ended, please login again!`,
@@ -147,7 +152,11 @@ export class AuthService {
     return accessToken;
   }
 
-  async ForgotPassword({ body }: { body: AuthForgotPasswordDto }) {
+  async ForgotPassword({
+    body,
+  }: {
+    body: AuthForgotPasswordDto;
+  }): Promise<{ forgotPasswordToken: string | null }> {
     const user = await this.prisma.user.findFirst({
       where: {
         email: body.email,
@@ -180,6 +189,7 @@ export class AuthService {
         forgotPasswordToken: true,
       },
     });
+
     return data;
   }
 

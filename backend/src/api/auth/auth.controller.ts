@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   BadRequestException,
   Body,
@@ -17,8 +16,7 @@ import {
   AuthRegisterDto,
   AuthResetDto,
 } from './auth.dto';
-import { User } from 'generated/prisma';
-import { Request } from 'express';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -40,9 +38,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async Login(@Body() body: AuthLoginDto) {
+  async Login(@Body() body: AuthLoginDto): Promise<User> {
     try {
-      return await this.service.Login({ body });
+      const res = await this.service.Login({ body });
+      return res as unknown as User;
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Invalid credential');

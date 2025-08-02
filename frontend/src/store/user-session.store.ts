@@ -31,7 +31,7 @@ const useUserSession = create<{
       isLoading: false,
     }),
   disableloading: () => set({ isLoading: false }),
-  logout: () => set(() => initial),
+  logout: () => set({ ...initial }),
 }));
 
 export { useUserSession };

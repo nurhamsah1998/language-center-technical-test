@@ -11,7 +11,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { StatusOrder } from 'generated/prisma';
+import { StatusOrder } from '@prisma/client';
 import { QueryInit } from 'src/utils/queryInit';
 
 class ProductOnOrder {

@@ -9,10 +9,13 @@ import {
 import ReactPaginate from "react-paginate";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { memo, useState } from "react";
-import type { orderFormProps } from "./mutation.section";
+import type { orderFormProps } from "./update-status.section";
 import type { orderProps } from "../order.section";
-import OrderUpdateStatusSection from "./mutation.section";
+import OrderUpdateStatusSection from "./update-status.section";
 import { useUserSession } from "@/store/user-session.store";
+import DetailOrderSection from "./detail-order.section";
+import TrackingOrderSection from "./tracking-order.section";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   data: orderProps[];
@@ -29,6 +32,7 @@ function TableOrderSection({
   handlePageClick = () => {},
 }: Props) {
   const { role } = useUserSession();
+  const client = useQueryClient();
   return (
     <div>
       <Table>
@@ -58,15 +62,18 @@ function TableOrderSection({
                 <TableCell>{item?.customer?.profile?.name || "-"}</TableCell>
                 <TableCell>{item?.status || "-"}</TableCell>
                 <TableCell>
-                  {new Date(item?.createdAt || "").toLocaleString()}
+                  {new Date(item?.createdAt || "").toDateString()}
                 </TableCell>
-                {role === "Admin" && (
-                  <TableCell>
-                    <div className="flex gap-3">
-                      <UpdateProductCategory item={item} />
-                    </div>
-                  </TableCell>
-                )}
+
+                <TableCell>
+                  <div className="flex gap-3">
+                    {role === "Admin" && (
+                      <UpdateOrderStatus client={client} item={item} />
+                    )}
+                    <DetailOrder item={item} />
+                    <TrackingOrder item={item} />
+                  </div>
+                </TableCell>
               </TableRow>
             ))
           ) : (
@@ -108,22 +115,45 @@ function TableOrderSection({
   );
 }
 
-const UpdateProductCategory = memo(({ item }: { item: orderProps }) => {
-  const [dataForm, setDataForm] = useState<orderFormProps>({
-    id: item?.id,
-    status: item?.status,
-  });
+const TrackingOrder = memo(({ item }: { item: orderProps }) => {
   return (
-    <OrderUpdateStatusSection dataForm={dataForm} setDataForm={setDataForm}>
-      <AlertDialogTrigger
-        onClick={() => {
-          setDataForm({ id: item?.id, status: item?.status });
-        }}
-        className="bg-green-200 px-3 rounded-md cursor-pointer text-green-600 hover:bg-green-300"
-      >
-        Change status
+    <TrackingOrderSection orderId={item.id}>
+      <AlertDialogTrigger className="bg-pink-200 px-3 rounded-md cursor-pointer text-pink-600 hover:bg-pink-300">
+        Tracking
       </AlertDialogTrigger>
-    </OrderUpdateStatusSection>
+    </TrackingOrderSection>
   );
 });
+
+const DetailOrder = memo(({ item }: { item: orderProps }) => {
+  return (
+    <DetailOrderSection orderId={item.id}>
+      <AlertDialogTrigger className="bg-cyan-200 px-3 rounded-md cursor-pointer text-cyan-600 hover:bg-cyan-300">
+        Detail
+      </AlertDialogTrigger>
+    </DetailOrderSection>
+  );
+});
+
+const UpdateOrderStatus = memo(
+  ({ item, client }: { client: QueryClient; item: orderProps }) => {
+    const [dataForm, setDataForm] = useState<orderFormProps>({
+      id: item?.id,
+      status: item?.status,
+    });
+    return (
+      <OrderUpdateStatusSection dataForm={dataForm} setDataForm={setDataForm}>
+        <AlertDialogTrigger
+          onClick={() => {
+            setDataForm({ id: item?.id, status: item?.status });
+            client.removeQueries({ queryKey: [`/order/${item?.id}`] });
+          }}
+          className="bg-green-200 px-3 rounded-md cursor-pointer text-green-600 hover:bg-green-300"
+        >
+          Change status
+        </AlertDialogTrigger>
+      </OrderUpdateStatusSection>
+    );
+  }
+);
 export default TableOrderSection;

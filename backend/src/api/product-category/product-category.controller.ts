@@ -17,13 +17,23 @@ import { AuthGuardService } from 'src/guard/guard.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('product-category')
-@UseGuards(AuthGuardService)
-@ApiBearerAuth('access_token')
 export class ProductCategoryController {
   constructor(
     private readonly productCategoryService: ProductCategoryService,
   ) {}
 
+  @Get('/public')
+  async PublicFindAll(@Query() query: QueryInit) {
+    try {
+      return await this.productCategoryService.FindAll(query);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException();
+    }
+  }
+
+  @UseGuards(AuthGuardService)
+  @ApiBearerAuth('access_token')
   @Post()
   async Create(@Body() body: MutationProductCategoryDto) {
     try {
@@ -39,6 +49,8 @@ export class ProductCategoryController {
     }
   }
 
+  @UseGuards(AuthGuardService)
+  @ApiBearerAuth('access_token')
   @Get()
   async FindAll(@Query() query: QueryInit) {
     try {
@@ -49,6 +61,8 @@ export class ProductCategoryController {
     }
   }
 
+  @UseGuards(AuthGuardService)
+  @ApiBearerAuth('access_token')
   @Put(':id')
   async Update(
     @Param('id') id: string,
@@ -67,6 +81,8 @@ export class ProductCategoryController {
     }
   }
 
+  @UseGuards(AuthGuardService)
+  @ApiBearerAuth('access_token')
   @Delete(':id')
   async Remove(@Param('id') id: string) {
     try {

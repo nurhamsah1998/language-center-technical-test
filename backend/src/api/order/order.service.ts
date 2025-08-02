@@ -37,7 +37,7 @@ export class OrderService {
           customerId: userSession.id as keyof UserSession,
           status: 'Packaging',
           orderCode: `ORDER-${totalCountOrder + 1}-${Math.floor(Math.random() * 2000)}`,
-          tracking: ['still in the shop'],
+          tracking: ['Receiving order', 'In the shop'],
           ProductOnOrder: {
             createMany: {
               data: body.products.map((item) => ({
@@ -51,18 +51,29 @@ export class OrderService {
     });
   }
 
-  async FindAll(query: QueryOrder) {
+  async FindAll({ query, request }: { query: QueryOrder; request: Request }) {
+    const userSession: UserSession = request['user'];
+    const isCustomer = userSession.role === 'Customer';
     const totalData = await this.prisma.order.count({
       where: {
         orderCode: query.search,
+        ...(isCustomer && {
+          customerId: userSession.id,
+        }),
       },
     });
     const data = await this.prisma.order.findMany({
       where: {
         orderCode: query.search,
+        ...(isCustomer && {
+          customerId: userSession.id,
+        }),
       },
       skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
       take: query.limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         customer: {
           select: {
@@ -95,6 +106,12 @@ export class OrderService {
         ProductOnOrder: {
           select: {
             productId: true,
+            product: {
+              select: {
+                name: true,
+                sellPrice: true,
+              },
+            },
             qty: true,
           },
         },
@@ -116,8 +133,14 @@ export class OrderService {
     }
     return dataOrder;
   }
+
   async FindOne(id: string) {
     return await this.findOrderById(id);
+  }
+
+  async OrderTracking(id: string) {
+    const data = await this.findOrderById(id);
+    return data.tracking;
   }
 
   async UpdateStatus({ id, body }: { id: string; body: UpdateStatusOrderDto }) {

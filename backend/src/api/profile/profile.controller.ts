@@ -6,6 +6,7 @@ import {
   Req,
   UseGuards,
   BadRequestException,
+  SetMetadata,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { Request } from 'express';
@@ -16,6 +17,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('profile')
 @UseGuards(AuthGuardService)
 @ApiBearerAuth('access_token')
+@SetMetadata('isAdmin', false)
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 

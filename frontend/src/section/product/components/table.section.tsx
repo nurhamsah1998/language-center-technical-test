@@ -11,37 +11,53 @@ import ModalAlert from "@/components/internal/modal-alert";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { memo, useState } from "react";
 import useMutationX from "@/hooks/useMutationX";
-import type { productProps } from "../product.section";
+import type { productProps, productQueryProps } from "../product.section";
 import type { productFormProps } from "./mutation.section";
 import ProductMutationSection from "./mutation.section";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
+  query: productQueryProps;
   data: productProps[];
   totalPage: number;
-  page: number;
   isLoading: boolean;
   handlePageClick: (arg: { selected: number }) => void;
+  setQuery: (prev: productQueryProps) => void;
 };
 function TableProductSection({
   data,
+  query,
+  setQuery,
   totalPage,
-  page,
   isLoading,
   handlePageClick = () => {},
 }: Props) {
   const client = useQueryClient();
+  const handleSort = (sort: string) => {
+    setQuery({
+      ...query,
+      [sort]: query[sort as keyof productQueryProps] === "asc" ? "desc" : "asc",
+    });
+  };
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow className="bg-primary hover:bg-primary ">
             <TableHead className="text-white">Name</TableHead>
-            <TableHead className="text-white">category</TableHead>
+            <TableHead className="text-white">Category</TableHead>
             <TableHead className="text-white">Sell price</TableHead>
-            <TableHead className="text-white">Buy price</TableHead>
+            <TableHead className="text-white">Stock</TableHead>
             <TableHead className="text-white">Selled</TableHead>
-            <TableHead className="text-white">Created at</TableHead>
+            <TableHead className="text-white">
+              <div
+                onClick={() => handleSort("sortCreatedAt")}
+                className=" cursor-pointer"
+              >
+                Created at{" "}
+                <span className="text-xs">({query.sortCreatedAt})</span>
+              </div>
+            </TableHead>
             <TableHead className="text-white">Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -61,10 +77,10 @@ function TableProductSection({
                 <TableCell>{item?.name}</TableCell>
                 <TableCell>{item?.productCategory?.name || "-"}</TableCell>
                 <TableCell>{item?.sellPrice}</TableCell>
-                <TableCell>{item?.buyPrice}</TableCell>
+                <TableCell>{item?.stock}</TableCell>
                 <TableCell>{item?.selled}</TableCell>
                 <TableCell>
-                  {new Date(item?.createdAt || "").toLocaleString()}
+                  {new Date(item?.createdAt || "").toLocaleTimeString()}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-3">
@@ -99,10 +115,12 @@ function TableProductSection({
           pageCount={totalPage || 0}
           previousLabel="previous"
           previousClassName={` ${
-            page === 1 ? "text-slate-600 cursor-not-allowed" : "cursor-pointer"
+            query.page === 1
+              ? "text-slate-600 cursor-not-allowed"
+              : "cursor-pointer"
           }`}
           nextClassName={` ${
-            totalPage === page
+            totalPage === query.page
               ? "text-slate-600 cursor-not-allowed"
               : "cursor-pointer"
           }`}

@@ -16,7 +16,7 @@ function SelectOption({
   placeholder = "text",
 }: {
   options: optionProps[];
-  onChange: () => void;
+  onChange: (id?: string) => void;
   value: string | undefined;
   placeholder: string;
   disabled?: boolean;
