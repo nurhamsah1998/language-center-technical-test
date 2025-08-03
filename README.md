@@ -37,3 +37,4 @@ Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
       http://localhost:3000/api-docs
   
 # Penutup
+Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian dokumetasi project ini saya buat kurang lebihnya saya mohon maaf Terimakasih
