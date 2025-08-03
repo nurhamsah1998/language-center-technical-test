@@ -148,6 +148,12 @@ const LoginSection = ({ className, ...props }: React.ComponentProps<"div">) => {
                   register
                 </a>
               </div>
+              <div className="mt-4 text-center text-sm">
+                Go explore our{" "}
+                <a href="/" className="underline underline-offset-4">
+                  product
+                </a>
+              </div>
             </form>
           </CardContent>
         </Card>

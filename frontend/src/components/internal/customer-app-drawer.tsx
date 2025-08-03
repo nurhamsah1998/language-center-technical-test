@@ -1,11 +1,11 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import CustomerTopNavbar, { customerNavMenu } from "./customer-top-navbar";
 import useFetch from "@/hooks/useFetch";
 import { useUserSession } from "@/store/user-session.store";
 import { Card, CardContent } from "../ui/card";
 
 function CustomerAppDrawer() {
-  const { login } = useUserSession();
+  const { login, role } = useUserSession();
   useFetch({
     api: "/profile",
     invalidateKey: "/profile",
@@ -24,6 +24,7 @@ function CustomerAppDrawer() {
   const labelHeader = customerNavMenu?.find(
     (item) => item.path === location.pathname
   );
+  if (role === "Admin") return <Navigate to="/admin" replace />;
   return (
     <div>
       <CustomerTopNavbar />

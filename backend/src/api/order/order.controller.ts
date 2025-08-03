@@ -61,6 +61,7 @@ export class OrderController {
   }
 
   @Get(':id')
+  @SetMetadata('isAdmin', false)
   async FindOne(@Param('id') id: string) {
     try {
       return await this.orderService.FindOne(id);

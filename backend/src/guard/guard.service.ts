@@ -28,10 +28,9 @@ export class AuthGuardService implements CanActivate {
         secret: process.env.ACCESS_TOKEN,
       });
       /// VALIDASI UNTUK PROTEKSI API YANG HANYA BISA DI ACCESS OLEH ROLE ADMIN
-      if (
-        payload.role !== 'Admin' &&
-        this.reflector.get('isAdmin', context.getHandler())
-      ) {
+      const isNonSharedPermission: boolean =
+        (await this.reflector.get('isAdmin', context.getHandler())) ?? true;
+      if (payload.role !== 'Admin' && isNonSharedPermission) {
         throw new UnauthorizedException('only Admin can do this!');
       }
 

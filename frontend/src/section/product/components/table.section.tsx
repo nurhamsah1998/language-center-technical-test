@@ -47,6 +47,7 @@ function TableProductSection({
             <TableHead className="text-white">Name</TableHead>
             <TableHead className="text-white">Category</TableHead>
             <TableHead className="text-white">Sell price</TableHead>
+            <TableHead className="text-white">Buy price</TableHead>
             <TableHead className="text-white">Stock</TableHead>
             <TableHead className="text-white">Selled</TableHead>
             <TableHead className="text-white">
@@ -77,6 +78,7 @@ function TableProductSection({
                 <TableCell>{item?.name}</TableCell>
                 <TableCell>{item?.productCategory?.name || "-"}</TableCell>
                 <TableCell>{item?.sellPrice}</TableCell>
+                <TableCell>{item?.buyPrice}</TableCell>
                 <TableCell>{item?.stock}</TableCell>
                 <TableCell>{item?.selled}</TableCell>
                 <TableCell>

@@ -17,11 +17,11 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('profile')
 @UseGuards(AuthGuardService)
 @ApiBearerAuth('access_token')
-@SetMetadata('isAdmin', false)
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
+  @SetMetadata('isAdmin', false)
   async MyProfile(@Req() request: Request) {
     try {
       return await this.profileService.MyProfile(request);
@@ -32,6 +32,7 @@ export class ProfileController {
   }
 
   @Put()
+  @SetMetadata('isAdmin', false)
   async UpdateMyProfile(
     @Body() body: UpdateProfileDto,
     @Req() request: Request,
@@ -46,6 +47,7 @@ export class ProfileController {
   }
 
   @Put('/change-my-password')
+  @SetMetadata('isAdmin', false)
   async ChangeMyPassword(
     @Body() body: ChangeMyPasswordDto,
     @Req() request: Request,

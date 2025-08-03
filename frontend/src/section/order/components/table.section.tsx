@@ -116,9 +116,13 @@ function TableOrderSection({
 }
 
 const TrackingOrder = memo(({ item }: { item: orderProps }) => {
+  const [state, setState] = useState<string | undefined>();
   return (
-    <TrackingOrderSection orderId={item.id}>
-      <AlertDialogTrigger className="bg-pink-200 px-3 rounded-md cursor-pointer text-pink-600 hover:bg-pink-300">
+    <TrackingOrderSection orderId={state}>
+      <AlertDialogTrigger
+        onClick={() => setState(item?.id)}
+        className="bg-pink-200 px-3 rounded-md cursor-pointer text-pink-600 hover:bg-pink-300"
+      >
         Tracking
       </AlertDialogTrigger>
     </TrackingOrderSection>
@@ -126,9 +130,13 @@ const TrackingOrder = memo(({ item }: { item: orderProps }) => {
 });
 
 const DetailOrder = memo(({ item }: { item: orderProps }) => {
+  const [state, setState] = useState<string | undefined>();
   return (
-    <DetailOrderSection orderId={item.id}>
-      <AlertDialogTrigger className="bg-cyan-200 px-3 rounded-md cursor-pointer text-cyan-600 hover:bg-cyan-300">
+    <DetailOrderSection orderId={state}>
+      <AlertDialogTrigger
+        onClick={() => setState(item?.id)}
+        className="bg-cyan-200 px-3 rounded-md cursor-pointer text-cyan-600 hover:bg-cyan-300"
+      >
         Detail
       </AlertDialogTrigger>
     </DetailOrderSection>
@@ -138,8 +146,8 @@ const DetailOrder = memo(({ item }: { item: orderProps }) => {
 const UpdateOrderStatus = memo(
   ({ item, client }: { client: QueryClient; item: orderProps }) => {
     const [dataForm, setDataForm] = useState<orderFormProps>({
-      id: item?.id,
-      status: item?.status,
+      id: null,
+      status: "",
     });
     return (
       <OrderUpdateStatusSection dataForm={dataForm} setDataForm={setDataForm}>

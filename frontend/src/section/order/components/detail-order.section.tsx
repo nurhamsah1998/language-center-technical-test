@@ -16,7 +16,7 @@ function DetailOrderSection({
   orderId,
 }: {
   children: ReactElement;
-  orderId: string;
+  orderId: string | undefined;
 }) {
   /// GET ORDER BY ID
   const { data, isLoading } = useFetch({
