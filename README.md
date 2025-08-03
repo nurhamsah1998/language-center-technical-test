@@ -3,7 +3,7 @@ Halo kakak developer, perkenalkan nama saya Nurhamsah biasa dipanggil Nur asal k
 sebelum ke proses install saya mau memberikan breakdown singkat tentang aplikasi ini berdasarkan dan pemahaman [dokument tugas](https://docs.google.com/document/d/1HtRL4n-n5uyxnsP1Em_BXxbYVRGFefyko5TI1sr2RW0/edit?usp=sharing) yang dikirimkan ke saya.
 
 ### Frontend
-- React JS
+- React + TypeScript + Vite
 - [React router dom](https://reactrouter.com/home)
 - [Tailwind](https://tailwindcss.com/) CSS (base style)
 - [Shadcn](https://ui.shadcn.com/) (UI component)
