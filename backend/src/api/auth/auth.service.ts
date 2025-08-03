@@ -19,7 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-  private accessTokenExpiresIn = '5s';
+  private accessTokenExpiresIn = '20s';
   private refreshTokenExpiresIn = '7d';
 
   async Register({ body }: { body: AuthRegisterDto }): Promise<User> {

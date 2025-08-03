@@ -99,6 +99,7 @@ const fetching = async ({
           awaitingCount = 1;
           throw new Error("Something wrong cannot get data");
         } else {
+          awaitingCount++;
           return await fetching({ api, queryParams, refreshToken, onSuccess });
         }
         /// JIKA TIDAK ADA ENDPOINT LAIN YANG MENCOBA

@@ -47,14 +47,14 @@ function AreaChart({
         xaxis: {
           type: "category",
           categories: analyticsRevenue?.map((item) =>
-            new Date(item.date_gs).toDateString()
+            new Date(item?.date_gs).toDateString()
           ),
         },
       },
       series: [
         {
           name: "Revenue",
-          data: analyticsRevenue?.map((item) => item.revenue),
+          data: analyticsRevenue?.map((item) => item?.revenue) || [],
         },
       ],
     });
