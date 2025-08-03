@@ -16,6 +16,23 @@ sebelum ke proses install saya mau memberikan breakdown singkat tentang aplikasi
 
 ### Database
 - Postgres
+  
+### Seeders
+- 2 akun
+      
+      ADMIN ACCOUNT
+       email : admin@example.com
+       password : 12345678
+  
+      CUSTOMER ACCOUNT
+       email : nur.hamsah.cash@gmail.com
+       password : 12345678
+  
+- 50 data dummy product
+- 4 data dummy product category
+
+### Lain lain
+- untuk membuat akun **Customer** lagi bisa menggunakan fitur register.
 
 # Cara Running Aplikasi
 Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
@@ -39,4 +56,4 @@ Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
 - tidak perlu configurasi file .ENV, karena sudah saya sertakan untuk mempermudah proses review.
   
 # Penutup
-Pada project ini ada beberapa fitur yang ingin saya integrasikan seperti caching dan websocket, cuma dengan keterbatasan waktu saya dahulukan fitur utamanya dulu. Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian yang bisa saya sampaikan, saya berusaha memberikan sejelas dan sesingkat mungkin pada dokumentasi ini, kurang lebihnya saya mohon maaf. Terimakasih
+Pada project ini ada beberapa fitur yang ingin saya integrasikan seperti caching, micro service dan websocket, cuma dengan keterbatasan waktu saya dahulukan fitur utamanya dulu. Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian yang bisa saya sampaikan, saya berusaha memberikan sejelas dan sesingkat mungkin pada dokumentasi ini, kurang lebihnya saya mohon maaf. Terimakasih
