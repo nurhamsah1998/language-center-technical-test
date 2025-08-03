@@ -37,4 +37,4 @@ Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
       http://localhost:3000/api-docs
   
 # Penutup
-Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian dokumetasi project ini saya buat kurang lebihnya saya mohon maaf Terimakasih
+Pada project ini ada beberapa fitur yang ingin saya integrasikan seperti caching dan websocket, cuma dengan keterbatasan waktu saya dahulukan fitur utamanya dulu. Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian yang bisa saya sampaikan, saya berusaha memberikan sejelas dan sesingkat mungkin pada dokumentasi ini, kurang lebihnya saya mohon maaf. Terimakasih
