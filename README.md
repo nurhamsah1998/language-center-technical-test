@@ -33,10 +33,25 @@ sebelum ke proses install saya mau memberikan breakdown singkat tentang aplikasi
 
 ### Lain lain
 - untuk membuat akun **Customer** lagi bisa menggunakan fitur register.
+- tidak perlu membuat file .ENV, karena sudah saya sertakan untuk mempermudah proses review. mungkin akan perlu penyesuaian lagi jika user atau password koneksi ke database berbeda.
+- ENV frontend :
+
+      LANGUAGE_CENTER_BASE_URL=http://127.0.0.1:3000
+
+- ENV backend :
+  
+      DATABASE_URL="postgresql://postgres:root@localhost:5432/language_center"
+      ACCESS_TOKEN=languagecenterI
+      REFRESH_TOKEN=languagecenterII
+      RESET_PASSWORD_TOKEN=languagecenterIII
 
 # Cara Running Aplikasi
 Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
 
+- buat database baru dengan nama seperti dibawah ini :
+  
+      language_center
+  
 - langkah pertama menginstall semua dependencies dulu
   
       npm run install-technical-test-language-center
@@ -53,7 +68,6 @@ Pada aplikasi ini saya menggunakan version **NPM 10.9.2** dan **Node v22.17.1**.
 
       http://localhost:3000/api-docs
     
-- tidak perlu configurasi file .ENV, karena sudah saya sertakan untuk mempermudah proses review.
   
 # Penutup
 Pada project ini ada beberapa fitur yang ingin saya integrasikan seperti caching, micro service, mongoDB dan websocket, cuma dengan keterbatasan waktu saya dahulukan fitur utamanya dulu. Jika terdapat error ataupun pertanyaan kakak bisa [contact saya](https://api.whatsapp.com/send/?phone=081213221343&text&type=phone_number&app_absent=0) atau mengunjungi [personal web](https://nurhamsah.vercel.app/) saya. Demikian yang bisa saya sampaikan, saya berusaha memberikan sejelas dan sesingkat mungkin pada dokumentasi ini, kurang lebihnya saya mohon maaf. Terimakasih
